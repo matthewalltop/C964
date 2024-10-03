@@ -1,0 +1,4 @@
+﻿cognitive-complexity-threshold = 15
+type-complexity-threshold = 100
+too-many-arguments-threshold = 5
+enum-variant-size-threshold = 10
