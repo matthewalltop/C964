@@ -1,4 +1,5 @@
-﻿name: CI
+﻿# Ripped from here - https://github.com/actions-rs/meta/blob/master/recipes/quickstart.md
+name: CI
 on:
   push:
     branches: [main]
