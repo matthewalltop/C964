@@ -6,9 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+plotlars = "0.5.0"
+evcxr = "0.17.0"
 hashbrown = "0.15.0"
 linfa = "0.7.0"
-plotlars = "0.5.0"
-plotly = "0.10.0"
-polars = "0.43.1"
-polars-io = "0.43.1"
+polars = { version = "0.42.0", features = [
+    "lazy", 
+    "csv", 
+] }
+
