@@ -1,33 +1,5 @@
-﻿use std::fmt;
-use polars::prelude::*;
+﻿use polars::prelude::*;
 use std::path::{Path, PathBuf};
-
-#[derive(Debug)]
-pub enum Gender {
-    Female = 0,
-    Male = 1
-}
-
-impl fmt::Display for Gender {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Debug::fmt(self, f)
-    }
-}
-
-#[derive(Debug)]
-pub enum Age {
-    SeventeenToTwentyNine = 1,
-    ThirtyToThirtyNine = 2,
-    FortyToFortyNine = 3,
-    FiftyToSixtySeven = 4
-}
-
-impl fmt::Display for Age {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Debug::fmt(self, f)
-    }
-}
-
 
 pub fn load_conners_test(with_controls: bool) -> LazyFrame {
     let root_path = get_path(with_controls);

@@ -1,4 +1,5 @@
-﻿use crate::frames::hyperaktiv::{load_patient_info, Age, Gender};
+﻿use crate::frames::hyperaktiv::{load_patient_info};
+use crate::frames::enums::{Age, Gender};
 use polars::prelude::*;
 
 pub fn patient_info_has_adhd_hyperactive() -> DataFrame {

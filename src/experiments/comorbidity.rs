@@ -1,16 +1,15 @@
-﻿use plotlars::{Plot, ScatterPlot};
-use polars::prelude::{col, lit, when};
+﻿use polars::prelude::{col, lit, when};
 use frames::hyperaktiv::*;
 use crate::frames;
 
 pub fn comorbidity_of_anxiety_or_mood_disorder() {
     let dataset = load_patient_info(false)
-                                .filter(
-                                    col("BIPOLAR")
-                                        .eq(1)
-                                        .or(col("UNIPOLAR").eq(1))
-                                        .or(col("ANXIETY").eq(1))
-                                )
+        .filter(
+            col("BIPOLAR")
+                .eq(1)
+                .or(col("UNIPOLAR").eq(1))
+                .or(col("ANXIETY").eq(1))
+        )
         .with_column(
             when(
                 col("ADHD")
@@ -23,9 +22,8 @@ pub fn comorbidity_of_anxiety_or_mood_disorder() {
                 .then(lit("ADHD-PH"))
                 .otherwise(lit("ADHD-PI"))
                 .alias("ADHD Type")
-            
         )
-        
+
         .select([
             col("SEX"),
             col("AGE"),
@@ -37,7 +35,7 @@ pub fn comorbidity_of_anxiety_or_mood_disorder() {
         ])
         .collect()
         .unwrap();
-    
+
     println!("{}", dataset);
     // ScatterPlot::builder()
     //     .data(&dataset)
