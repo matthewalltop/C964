@@ -1,4 +1,4 @@
-﻿use polars::prelude::{col, lit, when};
+﻿use polars::prelude::{col};
 use frames::hyperaktiv::*;
 use crate::frames;
 
