@@ -1,85 +1,140 @@
 ﻿use crate::frames::hyperaktiv::{load_patient_info};
-use crate::frames::enums::{Age, Gender};
 use polars::prelude::*;
+use crate::traits::patient_info_ext::{GenderAndADHDTypeFilter, SelectPatientInfoColumns};
 
+/// Returns all patients who have ADHD-PH
 pub fn patient_info_has_adhd_hyperactive() -> DataFrame {
     load_patient_info(false)
         .filter(
-            col("ADHD").eq(1)
+            col("ADHD").eq(1).and(col("ADD").eq(0))
         )
-        .filter( col("ADD").eq(0))
-        .with_column(
-            when(
-                col("ADHD").eq(1)
-            ).then(
-                lit("ADHD-PH")
-            )
-                .otherwise("ADHD")
-                .alias("ADHD Type")
-        )
-        .with_column(
-            when(
-                col("SEX").eq(Gender::Female as i32)
-            )
-                .then(lit("Female"))
-                .otherwise(lit("Male"))
-                .alias("Gender")
-        )
-        .with_column(
-            when(
-                col("AGE").eq(Age::SeventeenToTwentyNine as i32)
-            )
-                .then(lit("17-29"))
-                .when(col("AGE").eq(Age::ThirtyToThirtyNine as i32))
-                .then(lit("30-39"))
-                .when(col("AGE").eq(Age::FortyToFortyNine as i32))
-                .then(lit("40-49"))
-                .otherwise(lit("50-67"))
-                .alias("Age Range")
-        )
-        .select(
-            [
-                col("ID").alias("Patient ID"),
-                col("Gender"),
-                col("Age Range"),
-                col("ADHD Type"),
-                col("BIPOLAR"),
-                col("UNIPOLAR"),
-                col("ANXIETY"),
-                col("SUBSTANCE"),
-                col("OTHER"),
-                col("MED"),
-                col("MED_Antidepr"),
-                col("MED_Moodstab"),
-                col("MED_Antipsych"),
-                col("MED_Anxiety_Benzo"),
-                col("MED_Sleep"),
-                col("MED_Analgesics_Opioids"),
-                col("MED_Stimulants")
-            ]
-        )
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
         .collect()
         .unwrap()
 }
 
+/// Returns all patients who have ADHD-PI
 pub fn patient_info_has_adhd_innattentive() -> DataFrame {
     load_patient_info(false)
         .filter(
-            col("ADHD").eq(0)
+            col("ADHD").eq(0).and(col("ADD").eq(1))
         )
-        .filter(col("ADD").eq(1))
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
         .collect()
         .unwrap()
 }
 
+/// Returns all patients who have ADHD-C
 pub fn patient_info_has_adhd_combined() -> DataFrame {
     load_patient_info(false)
         .filter(
-            col("ADHD").eq(1)
+            col("ADHD").eq(1).and(col("ADD").eq(1))
         )
-        .filter( col("ADD").eq(1))
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
         .collect()
         .unwrap()
 }
 
+/// Returns all patients who have Bipolar Disorder
+pub fn patient_info_has_bipolar_disorder() -> DataFrame {
+    load_patient_info(false)
+        .filter(
+            col("BIPOLAR").eq(1)
+        )
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
+        .collect()
+        .unwrap()
+}
 
+/// Returns all patients who have Unipolar Depression
+pub fn patient_info_has_unipolar_depression() -> DataFrame {
+    load_patient_info(false)
+        .filter(
+            col("UNIPOLAR").eq(1)
+        )
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
+        .collect()
+        .unwrap()
+}
+
+/// Returns all patients who have Anxiety
+/// Does not discriminate whether patients have another comorbid mental health condition
+pub fn patient_info_has_anxiety() -> DataFrame {
+    load_patient_info(false)
+        .filter(
+            col("ANXIETY").eq(1)
+        )
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
+        .collect()
+        .unwrap()
+}
+
+/// Returns all patients who have a subtance abuse disorder
+/// Does not discriminate whether patients have another comorbid mental health condition
+pub fn patient_info_has_substance_abuse_disorder() -> DataFrame {
+    load_patient_info(false)
+        .filter(
+            col("SUBSTANCE").eq(1)
+        )
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
+        .collect()
+        .unwrap()
+}
+
+/// Returns all patients who indicated 'Other' for presence of a mental health condition.
+/// Does not discriminate whether patients have another comorbid mental health condition
+pub fn patient_info_has_other_mental_health_condition() -> DataFrame {
+    load_patient_info(false)
+        .filter(
+            col("OTHER").eq(1)
+        )
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
+        .collect()
+        .unwrap()
+}
+
+/// Returns all patients who indicated they are currently taking medication.
+pub  fn patient_info_patient_takes_medication() -> DataFrame {
+    load_patient_info(false)
+        .filter(
+            col("MED").eq(1).or(
+            col("MED_Antidepr").eq(1)).or(
+            col("MED_Moodstab").eq(1)).or(
+            col("MED_Antipsych").eq(1)).or(
+            col("MED_Anxiety_Benzo").eq(1)).or(
+            col("MED_Sleep").eq(1)).or(
+            col("MED_Analgesics_Opioids").eq(1)).or(
+            col("MED_Stimulants").eq(1))
+        )
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
+        .collect()
+        .unwrap()
+}
+
+/// Returns all patients who indicated they take no medication for any condition.
+pub  fn patient_info_patient_does_not_take_medication() -> DataFrame {
+    load_patient_info(false)
+        .filter(
+            col("MED").eq(0).and(
+                col("MED_Antidepr").eq(0)).and(
+                col("MED_Moodstab").eq(0)).and(
+                col("MED_Antipsych").eq(0)).and(
+                col("MED_Anxiety_Benzo").eq(0)).and(
+                col("MED_Sleep").eq(0)).and(
+                col("MED_Analgesics_Opioids").eq(0)).and(
+                col("MED_Stimulants").eq(0))
+        )
+        .apply_gender_age_adhd_type_translation()
+        .select_patient_info_columns()
+        .collect()
+        .unwrap()
+}

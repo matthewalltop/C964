@@ -1,6 +1,6 @@
 ﻿pub mod hyperaktiv;
-pub  mod patient_info;
-mod subtypes;
+pub mod patient_info;
+pub mod subtypes;
 
 pub mod enums {
     use std::fmt;
