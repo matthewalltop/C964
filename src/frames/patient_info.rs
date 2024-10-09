@@ -2,41 +2,7 @@
 use polars::prelude::*;
 use crate::traits::patient_info_ext::{GenderAndADHDTypeFilter, SelectPatientInfoColumns};
 
-/// Returns all patients who have ADHD-PH
-pub fn patient_info_has_adhd_hyperactive() -> DataFrame {
-    load_patient_info(false)
-        .filter(
-            col("ADHD").eq(1).and(col("ADD").eq(0))
-        )
-        .apply_gender_age_adhd_type_translation()
-        .select_patient_info_columns()
-        .collect()
-        .unwrap()
-}
 
-/// Returns all patients who have ADHD-PI
-pub fn patient_info_has_adhd_innattentive() -> DataFrame {
-    load_patient_info(false)
-        .filter(
-            col("ADHD").eq(0).and(col("ADD").eq(1))
-        )
-        .apply_gender_age_adhd_type_translation()
-        .select_patient_info_columns()
-        .collect()
-        .unwrap()
-}
-
-/// Returns all patients who have ADHD-C
-pub fn patient_info_has_adhd_combined() -> DataFrame {
-    load_patient_info(false)
-        .filter(
-            col("ADHD").eq(1).and(col("ADD").eq(1))
-        )
-        .apply_gender_age_adhd_type_translation()
-        .select_patient_info_columns()
-        .collect()
-        .unwrap()
-}
 
 /// Returns all patients who have Bipolar Disorder
 pub fn patient_info_has_bipolar_disorder() -> DataFrame {
@@ -137,4 +103,10 @@ pub  fn patient_info_patient_does_not_take_medication() -> DataFrame {
         .select_patient_info_columns()
         .collect()
         .unwrap()
+}
+
+#[cfg(test)]
+mod test {
+
+    
 }

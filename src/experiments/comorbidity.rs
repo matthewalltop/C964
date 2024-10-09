@@ -3,6 +3,8 @@ use frames::hyperaktiv::*;
 use crate::frames;
 
 pub fn comorbidity_of_anxiety_or_mood_disorder() {
+    // TODO: This belongs in frames - the graphical element can be exposed here, however.
+    
     let dataset = load_patient_info(false)
         .filter(
             col("BIPOLAR")

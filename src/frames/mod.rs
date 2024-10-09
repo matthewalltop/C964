@@ -1,4 +1,6 @@
-﻿pub mod hyperaktiv;
+﻿
+/// TODO: This module should stay internal
+pub mod hyperaktiv;
 pub mod patient_info;
 pub mod subtypes;
 
