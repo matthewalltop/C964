@@ -223,8 +223,7 @@ impl MentalHealthFilter for LazyFrame {
             MentalHealthCondition::UnipolarDepression => Some("UNIPOLAR"),
             MentalHealthCondition::SubstanceAbuseDisorder => Some("SUBSTANCE"),
             MentalHealthCondition::AnxietyDisorder => Some("ANXIETY"),
-            MentalHealthCondition::Other => Some("OTHER"),
-            _ => panic!("Invalid mental health condition provided for filter criteria")
+            MentalHealthCondition::Other => Some("OTHER")
         };
         
         let mhc = condition.unwrap();
