@@ -57,20 +57,6 @@ pub fn patient_info_has_adhd_hyperactive() -> DataFrame {
         .unwrap()
 }
 
-/// Returns all patients who have ADHD-PI
-/// Note - there are not actually any patients who are explicitly PI types reported in the dataset.
-#[deprecated]
-pub fn patient_info_has_adhd_inattentive() -> DataFrame {
-    load_patient_info(false)
-        .filter(
-            col("ADD").eq(1).and(col("ADHD").eq(1))
-        )
-        .apply_gender_age_adhd_type_translation()
-        .select_patient_info_columns()
-        .collect()
-        .unwrap()
-}
-
 /// Returns all patients with inattentive symptoms present.
 /// Note - the dataset indicates the "ADD" field is only representative of
 /// inattentive traits being present. It does not account for PI or C, specifically. 
@@ -121,16 +107,6 @@ mod test {
         let df = patient_info_has_adhd_hyperactive();
         assert!(!df.is_empty());
         assert_eq!(df.column("ADHD Type").unwrap().tail(Some(1)), Series::new("ADHD Type", &["ADHD-PH"]));
-        assert!(df.column("ADHD Type").unwrap().iter().all_equal());
-    }
-
-    #[deprecated]
-    /// This test always fails because there are no patients matching these criteria.
-    /// Leaving this here more for informational purposes than anything.
-    fn loads_all_patients_adhd_primary_inattentive() {
-        let df = patient_info_has_adhd_inattentive();
-        assert!(!df.is_empty());
-        assert_eq!(df.column("ADHD Type").unwrap().tail(Some(1)), Series::new("ADHD Type", &["ADHD-PI"]));
         assert!(df.column("ADHD Type").unwrap().iter().all_equal());
     }
 

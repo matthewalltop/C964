@@ -106,6 +106,9 @@ impl GenderAndADHDTypeFilter for LazyFrame {
                 )
                     .when(col("ADHD").eq(1))
                     .then(lit("ADHD-PH"))
+                    // This condition doesn't actually exist in the data set, explicitly - but inattentive symptoms are implied by a '1' in the ADD column.
+                    // Patients with this flag could be considered of the ADHD-Combined type or ADHD-Primary Inattentive type.
+                    // If we did have the presence of a 1 in the ADD column, but a 0 in the ADHD column - this would strongly imply ADHD-PI.
                     .otherwise(lit("ADHD-PI"))
                     .alias("ADHD Type")
             )

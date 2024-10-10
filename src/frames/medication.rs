@@ -4,7 +4,7 @@ use crate::frames::{GenderAndADHDTypeFilter, SelectPatientInfoColumns};
 use crate::frames::hyperaktiv::load_patient_info;
 
 /// Returns all patients who indicated they are currently taking medication.
-pub  fn patient_info_patient_takes_medication() -> DataFrame {
+pub fn patient_info_patient_takes_medication() -> DataFrame {
     load_patient_info(false)
         .filter(
             col("MED").eq(1).or(
@@ -39,4 +39,23 @@ pub  fn patient_info_patient_does_not_take_medication() -> DataFrame {
         .select_patient_info_columns()
         .collect()
         .unwrap()
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    
+    #[test]
+    fn loads_all_patients_taking_medication() {
+        let df = patient_info_patient_takes_medication();
+        assert!(!df.is_empty());
+        println!("{}", df);
+    }
+
+    #[test]
+    fn loads_all_patients_not_taking_medication() {
+        let df = patient_info_patient_does_not_take_medication();
+        assert!(!df.is_empty());
+        println!("{}", df);
+    }
 }
