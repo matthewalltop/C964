@@ -1,7 +1,7 @@
 ﻿use polars::frame::DataFrame;
 use polars::prelude::{col};
+use crate::frames::{GenderAndADHDTypeFilter, SelectPatientInfoColumns};
 use crate::frames::hyperaktiv::load_patient_info;
-use crate::traits::patient_info_ext::{GenderAndADHDTypeFilter, SelectPatientInfoColumns};
 
 
 /// Returns ADHD subtypes, gender, and age ranges of patients.
@@ -63,7 +63,7 @@ pub fn patient_info_has_adhd_hyperactive() -> DataFrame {
 pub fn patient_info_has_adhd_inattentive() -> DataFrame {
     load_patient_info(false)
         .filter(
-            col("ADD").eq(1).and(col("ADHD").eq(0))
+            col("ADD").eq(1).and(col("ADHD").eq(1))
         )
         .apply_gender_age_adhd_type_translation()
         .select_patient_info_columns()
@@ -71,7 +71,9 @@ pub fn patient_info_has_adhd_inattentive() -> DataFrame {
         .unwrap()
 }
 
-/// Returns all patients who have ADHD-C
+/// Returns all patients with inattentive symptoms present.
+/// Note - the dataset indicates the "ADD" field is only representative of
+/// inattentive traits being present. It does not account for PI or C, specifically. 
 pub fn patient_info_has_adhd_combined() -> DataFrame {
     load_patient_info(false)
         .filter(
@@ -123,7 +125,7 @@ mod test {
     }
 
     #[deprecated]
-    /// This test always fails because there are no patients matching this criteria.
+    /// This test always fails because there are no patients matching these criteria.
     /// Leaving this here more for informational purposes than anything.
     fn loads_all_patients_adhd_primary_inattentive() {
         let df = patient_info_has_adhd_inattentive();
