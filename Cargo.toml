@@ -6,23 +6,22 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-plotlars = "0.5.0"
+plotlars = "0.5.1"
 evcxr = "0.17.0"
-hashbrown = { version = "0.14", features = ["rayon", "ahash", "serde", "raw"] }
-
-polars = { version = "0.42.0", features = [
+hashbrown = { version = "0.15.0", features = ["rayon", "serde"] }
+polars = { version = "0.43.1", features = [
     "lazy", 
     "csv",
     "ndarray"
 ] }
-ndarray = "0.15.0"
+ndarray = "0.16.1"
 linfa = "0.7.0"
 linfa-bayes = "0.7.0"
 linfa-linear = "0.7.0"
-linfa-elasticnet = "0.7.0"
-linfa-trees = "0.7.0"
-linfa-svm = "0.7.0"
-linfa-ica = "0.7.0"
-linfa-pls = "0.7.0"
-linfa-preprocessing = "0.7.0"
-linfa-nn = "0.7.0"
+#linfa-elasticnet = "0.6.1"
+#linfa-trees = "0.6.1"
+#linfa-svm = "0.6.1"
+#linfa-ica = "0.6.1"
+#linfa-pls = "0.6.1"
+#linfa-preprocessing = "0.6.1"
+#linfa-nn = "0.6.1"

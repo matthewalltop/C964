@@ -8,7 +8,7 @@ use crate::experiments::comorbidity::comorbidity_of_mental_health_condition;
 mod frames;
 mod experiments;
 
-pub fn main() -> Result<(), Box<dyn Error>>{
-    let experiment = comorbidity_of_mental_health_condition();
+pub fn main() -> Result<(), Box<dyn Error>> {
+    let _experiment = comorbidity_of_mental_health_condition();
     Ok(())
 }
