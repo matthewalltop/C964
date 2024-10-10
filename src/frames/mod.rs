@@ -109,17 +109,17 @@ pub mod enums {
 // TODO: I consolidated several traits into this one large one - it may just be better to keep them all entirely separate.
 // They all do technically apply to the same "domain", as it were, each of the methods adds a translation, filter, or selection to the patient_info dataset once loaded into a Polars DataFrame
 
-trait PatientInfoTranslation {
+pub trait PatientInfoTranslation {
     fn translate_gender_and_adhd_type(&mut self) -> Self;
 }
 
-trait PatientInfoFilter {
+pub trait PatientInfoFilter {
     fn with_presence_of_mental_health_condition(&mut self) -> Self;
     fn with_absence_of_mental_health_condition(&mut self) -> Self;
     fn with_presence_of_given_mental_health_condition(&mut self, mental_health_condition: MentalHealthCondition) -> Self;
 }
 
-trait PatientInfoSelection {
+pub trait PatientInfoSelection {
     fn select_patient_info_columns(&mut self) -> Self;
 }
 

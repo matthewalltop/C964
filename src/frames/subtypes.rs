@@ -1,8 +1,7 @@
 ﻿use polars::frame::DataFrame;
 use polars::prelude::{col};
-use crate::frames::{GenderAndADHDTypeFilter, SelectPatientInfoColumns};
 use crate::frames::hyperaktiv::load_patient_info;
-
+use crate::frames::{PatientInfoSelection, PatientInfoTranslation};
 
 /// Returns ADHD subtypes, gender, and age ranges of patients.
 pub fn adhd_subtypes_with_gender_and_age() -> DataFrame {

@@ -1,5 +1,5 @@
 ﻿use polars::frame::DataFrame;
-use crate::frames::{GenderAndADHDTypeFilter, MentalHealthFilter, SelectPatientInfoColumns};
+use crate::frames::{ PatientInfoFilter, PatientInfoSelection, PatientInfoTranslation };
 use crate::frames::enums::MentalHealthCondition;
 use crate::frames::hyperaktiv::load_patient_info;
 

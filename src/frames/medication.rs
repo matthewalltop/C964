@@ -1,6 +1,6 @@
 ﻿use polars::frame::DataFrame;
 use polars::prelude::col;
-use crate::frames::{GenderAndADHDTypeFilter, SelectPatientInfoColumns};
+use crate::frames::{PatientInfoSelection, PatientInfoTranslation};
 use crate::frames::hyperaktiv::load_patient_info;
 
 /// Returns all patients who indicated they are currently taking medication.
