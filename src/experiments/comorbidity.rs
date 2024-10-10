@@ -3,6 +3,7 @@
 pub fn comorbidity_of_mental_health_condition_by_adhd_type() {
     // Start by grabbing all the patients
     let _df = patient_mental_health_conditions();
-        
+    
+    // TODO: Apply linfa here.
     // let mut adhd_type = 
 }

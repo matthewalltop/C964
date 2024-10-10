@@ -15,10 +15,8 @@ Note that I'm still working on this - as long as this comment is present, there 
 - `docs` - Contains documentation artifacts
 - `hyperaktiv` - Contains the `hyperaktiv` dataset, sourced from [Kaggle](https://www.kaggle.com/datasets/arashnic/adhd-diagnosis-data)
 - `src` - Contains Rust source code for the project.
-    - `training` - This is where the curated data will be used to train models via the `linfa` crate.
-    - `experiments` - Defines various experiments that combines frames into useful visualizations. This would represent where data is being curated in preparation for machine learning.
+    - `experiments` - Uses the underlying population samples derived within `frames` to perform experiments and train machine learning models. 
     - `frames` - Contains data frames built on top of the `hyperaktiv` data. This is where data is enriched through cleaning & transformations.'
-    - `traits` - Contains Rust traits that are implemented by other structs throughout the project.
 
 
 

@@ -106,21 +106,24 @@ pub mod enums {
 
 }
 
-trait GenderAndADHDTypeFilter {
+// TODO: I consolidated several traits into this one large one - it may just be better to keep them all entirely separate.
+// They all do technically apply to the same "domain", as it were, each of the methods adds a translation, filter, or selection to the patient_info dataset once loaded into a Polars DataFrame
+
+trait PatientInfoTranslation {
     fn translate_gender_and_adhd_type(&mut self) -> Self;
 }
 
-trait SelectPatientInfoColumns {
-    fn select_patient_info_columns(&mut self) -> Self;
-}
-
-trait MentalHealthFilter {
+trait PatientInfoFilter {
     fn with_presence_of_mental_health_condition(&mut self) -> Self;
     fn with_absence_of_mental_health_condition(&mut self) -> Self;
     fn with_presence_of_given_mental_health_condition(&mut self, mental_health_condition: MentalHealthCondition) -> Self;
 }
 
-impl GenderAndADHDTypeFilter for LazyFrame {
+trait PatientInfoSelection {
+    fn select_patient_info_columns(&mut self) -> Self;
+}
+
+impl PatientInfoTranslation for LazyFrame {
     // TODO: Not super happy about cloning here, see the actual implementation for ideas on a potentially better way to do this.
     // Note that a lot of the mechanisms that would make this easier are internal to the LazyFrame - so this may end up being the best path anyway.
     // https://github.com/pola-rs/polars/blob/main/crates/polars-lazy/src/frame/mod.rs
@@ -166,8 +169,46 @@ impl GenderAndADHDTypeFilter for LazyFrame {
     }
 }
 
-impl SelectPatientInfoColumns for LazyFrame {
+impl PatientInfoFilter for LazyFrame {
+    fn with_presence_of_mental_health_condition(&mut self) -> Self {
+        self.deref().clone().filter(
+            col("BIPOLAR")
+                .eq(1)
+                .or(col("UNIPOLAR").eq(1))
+                .or(col("ANXIETY").eq(1))
+                .or(col("SUBSTANCE").eq(1))
+                .or(col("OTHER").eq(1))
+        )
+    }
 
+    fn with_absence_of_mental_health_condition(&mut self) -> Self {
+        self.deref().clone().filter(
+            col("BIPOLAR")
+                .eq(0)
+                .and(col("UNIPOLAR").eq(0))
+                .and(col("ANXIETY").eq(0))
+                .and(col("SUBSTANCE").eq(0))
+                .and(col("OTHER").eq(0))
+        )
+    }
+
+    fn with_presence_of_given_mental_health_condition(&mut self, mental_health_condition: MentalHealthCondition) -> Self {
+        let condition = match  mental_health_condition {
+            MentalHealthCondition::BipolarDisorder => Some("BIPOLAR"),
+            MentalHealthCondition::UnipolarDepression => Some("UNIPOLAR"),
+            MentalHealthCondition::SubstanceAbuseDisorder => Some("SUBSTANCE"),
+            MentalHealthCondition::AnxietyDisorder => Some("ANXIETY"),
+            MentalHealthCondition::Other => Some("OTHER")
+        };
+
+        let mhc = condition.unwrap();
+        self.deref().clone()
+            .filter(col(mhc).eq(1))
+    }
+    
+}
+
+impl PatientInfoSelection for LazyFrame {
     fn select_patient_info_columns(&mut self) -> Self {
         self.deref().clone().select(
             [
@@ -190,44 +231,5 @@ impl SelectPatientInfoColumns for LazyFrame {
                 col("MED_Stimulants")
             ]
         )
-    }
-
-}
-
-impl MentalHealthFilter for LazyFrame {
-    fn with_presence_of_mental_health_condition(&mut self) -> Self {
-        self.deref().clone().filter(
-            col("BIPOLAR")
-                .eq(1)
-                .or(col("UNIPOLAR").eq(1))
-                .or(col("ANXIETY").eq(1))
-                .or(col("SUBSTANCE").eq(1))
-                .or(col("OTHER").eq(1))
-        )
-    }
-    
-    fn with_absence_of_mental_health_condition(&mut self) -> Self {
-        self.deref().clone().filter(
-            col("BIPOLAR")
-                .eq(0)
-                .and(col("UNIPOLAR").eq(0))
-                .and(col("ANXIETY").eq(0))
-                .and(col("SUBSTANCE").eq(0))
-                .and(col("OTHER").eq(0))
-        )
-    }
-    
-    fn with_presence_of_given_mental_health_condition(&mut self, mental_health_condition: MentalHealthCondition) -> Self {
-        let condition = match  mental_health_condition {
-            MentalHealthCondition::BipolarDisorder => Some("BIPOLAR"),
-            MentalHealthCondition::UnipolarDepression => Some("UNIPOLAR"),
-            MentalHealthCondition::SubstanceAbuseDisorder => Some("SUBSTANCE"),
-            MentalHealthCondition::AnxietyDisorder => Some("ANXIETY"),
-            MentalHealthCondition::Other => Some("OTHER")
-        };
-        
-        let mhc = condition.unwrap();
-        self.deref().clone()
-            .filter(col(mhc).eq(1))
     }
 }
