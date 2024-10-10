@@ -1,13 +1,27 @@
 ﻿use std::ops::Deref;
+use polars::frame::DataFrame;
 use polars::prelude::{col, lit, when, LazyFrame};
 use crate::frames::enums::{Age, Gender, MentalHealthCondition};
+use crate::frames::hyperaktiv::load_patient_info;
 
 /// This module exposes the raw hyperaktiv dataset
 mod hyperaktiv;
 
+/// This module exposes queries that provide data on the ADHD subtypes of the patients contained within the dataset.
 pub mod subtypes;
+
+/// This module exposes queries that provide data on mental health conditions
 pub mod mental_health;
 pub mod medication;
+
+/// Returns a full, translated and filtered version of the patient_info dataset from Hyperaktiv
+pub fn get_all_patient_info() -> DataFrame {
+    load_patient_info(false)
+        .translate_gender_and_adhd_type()
+        .select_patient_info_columns()
+        .collect()
+        .unwrap()
+}
 
 pub mod enums {
     use std::fmt;
@@ -105,9 +119,6 @@ pub mod enums {
     }
 
 }
-
-// TODO: I consolidated several traits into this one large one - it may just be better to keep them all entirely separate.
-// They all do technically apply to the same "domain", as it were, each of the methods adds a translation, filter, or selection to the patient_info dataset once loaded into a Polars DataFrame
 
 pub trait PatientInfoTranslation {
     fn translate_gender_and_adhd_type(&mut self) -> Self;
