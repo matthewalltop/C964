@@ -1,6 +1,6 @@
 ﻿use std::ops::Deref;
 use polars::prelude::{col, lit, when, LazyFrame};
-use crate::frames::enums::{Age, Gender};
+use crate::frames::enums::{Age, Gender, MentalHealthCondition};
 
 /// This module exposes the raw hyperaktiv dataset
 mod hyperaktiv;
@@ -37,6 +37,21 @@ pub mod enums {
             fmt::Debug::fmt(self, f)
         }
     }
+    
+    #[derive(Debug)]
+    pub enum MentalHealthCondition {
+        BipolarDisorder = 1,
+        UnipolarDepression = 2,
+        AnxietyDisorder = 3,
+        SubstanceAbuseDisorder = 4,
+        Other = 5
+    }
+
+    impl fmt::Display for MentalHealthCondition {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            fmt::Debug::fmt(self, f)
+        }
+    }
 
     #[cfg(test)]
     mod test {
@@ -69,23 +84,47 @@ pub mod enums {
             assert_eq!(Age::FortyToFortyNine.to_string(), "FortyToFortyNine");
             assert_eq!(Age::FiftyToSixtySeven.to_string(), "FiftyToSixtySeven");
         }
+        
+        #[test]
+        fn mental_health_condition_parses_to_i32() {
+            assert_eq!(MentalHealthCondition::BipolarDisorder as i32, 1);
+            assert_eq!(MentalHealthCondition::UnipolarDepression as i32, 2);
+            assert_eq!(MentalHealthCondition::AnxietyDisorder as i32, 3);
+            assert_eq!(MentalHealthCondition::SubstanceAbuseDisorder as i32, 4);
+            assert_eq!(MentalHealthCondition::Other as i32, 5);
+        }
+
+        #[test]
+        fn mental_health_condition_to_strings() {
+            assert_eq!(MentalHealthCondition::BipolarDisorder.to_string(), "BipolarDisorder");
+            assert_eq!(MentalHealthCondition::UnipolarDepression.to_string(), "UnipolarDepression");
+            assert_eq!(MentalHealthCondition::AnxietyDisorder.to_string(), "AnxietyDisorder");
+            assert_eq!(MentalHealthCondition::SubstanceAbuseDisorder.to_string(), "SubstanceAbuseDisorder");
+            assert_eq!(MentalHealthCondition::Other.to_string(), "Other");
+        }
     }
 
 }
 
 trait GenderAndADHDTypeFilter {
-    fn apply_gender_age_adhd_type_translation(&mut self) -> Self;
+    fn translate_gender_and_adhd_type(&mut self) -> Self;
 }
 
 trait SelectPatientInfoColumns {
     fn select_patient_info_columns(&mut self) -> Self;
 }
 
+trait MentalHealthFilter {
+    fn with_presence_of_mental_health_condition(&mut self) -> Self;
+    fn with_absence_of_mental_health_condition(&mut self) -> Self;
+    fn with_presence_of_given_mental_health_condition(&mut self, mental_health_condition: MentalHealthCondition) -> Self;
+}
+
 impl GenderAndADHDTypeFilter for LazyFrame {
     // TODO: Not super happy about cloning here, see the actual implementation for ideas on a potentially better way to do this.
     // Note that a lot of the mechanisms that would make this easier are internal to the LazyFrame - so this may end up being the best path anyway.
     // https://github.com/pola-rs/polars/blob/main/crates/polars-lazy/src/frame/mod.rs
-    fn apply_gender_age_adhd_type_translation(&mut self) -> LazyFrame {
+    fn translate_gender_and_adhd_type(&mut self) -> LazyFrame {
         self.deref().clone().with_column(
             when(
                 col("SEX").eq(Gender::Female as i32)
@@ -127,7 +166,6 @@ impl GenderAndADHDTypeFilter for LazyFrame {
     }
 }
 
-
 impl SelectPatientInfoColumns for LazyFrame {
 
     fn select_patient_info_columns(&mut self) -> Self {
@@ -154,4 +192,43 @@ impl SelectPatientInfoColumns for LazyFrame {
         )
     }
 
+}
+
+impl MentalHealthFilter for LazyFrame {
+    fn with_presence_of_mental_health_condition(&mut self) -> Self {
+        self.deref().clone().filter(
+            col("BIPOLAR")
+                .eq(1)
+                .or(col("UNIPOLAR").eq(1))
+                .or(col("ANXIETY").eq(1))
+                .or(col("SUBSTANCE").eq(1))
+                .or(col("OTHER").eq(1))
+        )
+    }
+    
+    fn with_absence_of_mental_health_condition(&mut self) -> Self {
+        self.deref().clone().filter(
+            col("BIPOLAR")
+                .eq(0)
+                .and(col("UNIPOLAR").eq(0))
+                .and(col("ANXIETY").eq(0))
+                .and(col("SUBSTANCE").eq(0))
+                .and(col("OTHER").eq(0))
+        )
+    }
+    
+    fn with_presence_of_given_mental_health_condition(&mut self, mental_health_condition: MentalHealthCondition) -> Self {
+        let condition = match  mental_health_condition {
+            MentalHealthCondition::BipolarDisorder => Some("BIPOLAR"),
+            MentalHealthCondition::UnipolarDepression => Some("UNIPOLAR"),
+            MentalHealthCondition::SubstanceAbuseDisorder => Some("SUBSTANCE"),
+            MentalHealthCondition::AnxietyDisorder => Some("ANXIETY"),
+            MentalHealthCondition::Other => Some("OTHER"),
+            _ => panic!("Invalid mental health condition provided for filter criteria")
+        };
+        
+        let mhc = condition.unwrap();
+        self.deref().clone()
+            .filter(col(mhc).eq(1))
+    }
 }

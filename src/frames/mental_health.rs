@@ -1,76 +1,45 @@
 ﻿use polars::frame::DataFrame;
-use polars::prelude::col;
-use crate::frames::{GenderAndADHDTypeFilter, SelectPatientInfoColumns};
+use crate::frames::{GenderAndADHDTypeFilter, MentalHealthFilter, SelectPatientInfoColumns};
+use crate::frames::enums::MentalHealthCondition;
 use crate::frames::hyperaktiv::load_patient_info;
 
-
+/// Returns all patients who reported a mental health or substance abuse condition.
 pub fn patient_mental_health_conditions() -> DataFrame {
     load_patient_info(false)
-        .filter(
-            col("BIPOLAR")
-                .eq(1)
-                .or(col("UNIPOLAR").eq(1))
-                .or(col("ANXIETY").eq(1))
-        )
-        .apply_gender_age_adhd_type_translation()
-        .select([
-            col("Gender"),
-            col("AGE"),
-            col("ADHD Type"),
-            // TODO: Aggregate these such that they display the condition.
-            col("BIPOLAR"),
-            col("UNIPOLAR"),
-            col("ANXIETY")
-        ])
+        .with_presence_of_mental_health_condition()
+        .translate_gender_and_adhd_type()
+        .select_patient_info_columns()
         .collect()
         .unwrap()
 }
 
+/// Returns all patients who reported no additional mental health or substance abuse conditions.
 pub fn patients_without_mental_health_conditions() -> DataFrame {
     load_patient_info(false)
-        .filter(
-            col("BIPOLAR")
-                .eq(0)
-                .and(col("UNIPOLAR").eq(0))
-                .and(col("ANXIETY").eq(0))
-                .and(col("SUBSTANCE").eq(0))
-                .and(col("OTHER").eq(0))
-        )
-        .apply_gender_age_adhd_type_translation()
-        .select([
-            col("Gender"),
-            col("AGE"),
-            col("ADHD Type"),
-            // TODO: Aggregate these such that they display the condition.
-            col("BIPOLAR"),
-            col("UNIPOLAR"),
-            col("ANXIETY"),
-            col("SUBSTANCE"),
-            col("OTHER")
-        ])
+        .with_absence_of_mental_health_condition()
+        .translate_gender_and_adhd_type()
+        .select_patient_info_columns()
         .collect()
         .unwrap()
 }
 
 /// Returns all patients who have Bipolar Disorder
+/// Does not discriminate whether patients have another co-morbid mental health condition
 pub fn patient_info_has_bipolar_disorder() -> DataFrame {
     load_patient_info(false)
-        .filter(
-            col("BIPOLAR").eq(1)
-        )
-        .apply_gender_age_adhd_type_translation()
+        .with_presence_of_given_mental_health_condition(MentalHealthCondition::BipolarDisorder)
+        .translate_gender_and_adhd_type()
         .select_patient_info_columns()
         .collect()
         .unwrap()
 }
 
 /// Returns all patients who have Unipolar Depression
+/// /// Does not discriminate whether patients have another co-morbid mental health condition
 pub fn patient_info_has_unipolar_depression() -> DataFrame {
     load_patient_info(false)
-        .filter(
-            col("UNIPOLAR").eq(1)
-        )
-        .apply_gender_age_adhd_type_translation()
+        .with_presence_of_given_mental_health_condition(MentalHealthCondition::UnipolarDepression)
+        .translate_gender_and_adhd_type()
         .select_patient_info_columns()
         .collect()
         .unwrap()
@@ -80,23 +49,19 @@ pub fn patient_info_has_unipolar_depression() -> DataFrame {
 /// Does not discriminate whether patients have another co-morbid mental health condition
 pub fn patient_info_has_anxiety() -> DataFrame {
     load_patient_info(false)
-        .filter(
-            col("ANXIETY").eq(1)
-        )
-        .apply_gender_age_adhd_type_translation()
+        .with_presence_of_given_mental_health_condition(MentalHealthCondition::AnxietyDisorder)
+        .translate_gender_and_adhd_type()
         .select_patient_info_columns()
         .collect()
         .unwrap()
 }
 
-/// Returns all patients who have a subtance abuse disorder
-/// Does not discriminate whether patients have another comorbid mental health condition
+/// Returns all patients who have a substance abuse disorder
+/// Does not discriminate whether patients have another co-morbid mental health condition
 pub fn patient_info_has_substance_abuse_disorder() -> DataFrame {
     load_patient_info(false)
-        .filter(
-            col("SUBSTANCE").eq(1)
-        )
-        .apply_gender_age_adhd_type_translation()
+        .with_presence_of_given_mental_health_condition(MentalHealthCondition::SubstanceAbuseDisorder)
+        .translate_gender_and_adhd_type()
         .select_patient_info_columns()
         .collect()
         .unwrap()
@@ -106,10 +71,8 @@ pub fn patient_info_has_substance_abuse_disorder() -> DataFrame {
 /// Does not discriminate whether patients have another comorbid mental health condition
 pub fn patient_info_has_other_mental_health_condition() -> DataFrame {
     load_patient_info(false)
-        .filter(
-            col("OTHER").eq(1)
-        )
-        .apply_gender_age_adhd_type_translation()
+        .with_presence_of_given_mental_health_condition(MentalHealthCondition::Other)
+        .translate_gender_and_adhd_type()
         .select_patient_info_columns()
         .collect()
         .unwrap()
@@ -128,7 +91,7 @@ mod test {
         assert!(!df.is_empty());
 
         let patients_without_mental_health_conditions = df.lazy()
-            .filter(col("BIPOLAR").eq(0).and(col("UNIPOLAR").eq(0)).and(col("ANXIETY").eq(0)))
+            .with_absence_of_mental_health_condition()
             .collect()
             .unwrap();
         
@@ -141,7 +104,7 @@ mod test {
         assert!(!df.is_empty());
 
         let patients_with_mental_health_conditions = df.lazy()
-            .filter(col("BIPOLAR").eq(1).or(col("UNIPOLAR").eq(1)).or(col("ANXIETY").eq(1)).or(col("SUBSTANCE").eq(1)).or(col("OTHER").eq(1)))
+            .with_presence_of_mental_health_condition()
             .collect()
             .unwrap();
 

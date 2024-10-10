@@ -7,7 +7,7 @@ use crate::frames::hyperaktiv::load_patient_info;
 /// Returns ADHD subtypes, gender, and age ranges of patients.
 pub fn adhd_subtypes_with_gender_and_age() -> DataFrame {
     load_patient_info(false)
-        .apply_gender_age_adhd_type_translation()
+        .translate_gender_and_adhd_type()
         .select([
             col("Gender"),
             col("ADHD Type"),
@@ -21,7 +21,7 @@ pub fn adhd_subtypes_with_gender_and_age() -> DataFrame {
 pub fn adhd_subtypes_female() -> DataFrame {
     load_patient_info(false)
         .filter(col("SEX").eq(0))
-        .apply_gender_age_adhd_type_translation()
+        .translate_gender_and_adhd_type()
         .select([
             col("Gender"),
             col("ADHD Type"),
@@ -35,7 +35,7 @@ pub fn adhd_subtypes_female() -> DataFrame {
 pub fn adhd_subtypes_male() -> DataFrame {
     load_patient_info(false)
         .filter(col("SEX").eq(1))
-        .apply_gender_age_adhd_type_translation()
+        .translate_gender_and_adhd_type()
         .select([
             col("Gender"),
             col("ADHD Type"),
@@ -51,7 +51,7 @@ pub fn patient_info_has_adhd_hyperactive() -> DataFrame {
         .filter(
             col("ADHD").eq(1).and(col("ADD").eq(0))
         )
-        .apply_gender_age_adhd_type_translation()
+        .translate_gender_and_adhd_type()
         .select_patient_info_columns()
         .collect()
         .unwrap()
@@ -65,7 +65,7 @@ pub fn patient_info_has_adhd_combined() -> DataFrame {
         .filter(
             col("ADHD").eq(1).and(col("ADD").eq(1))
         )
-        .apply_gender_age_adhd_type_translation()
+        .translate_gender_and_adhd_type()
         .select_patient_info_columns()
         .collect()
         .unwrap()
