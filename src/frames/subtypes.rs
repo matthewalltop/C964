@@ -1,120 +1,125 @@
-﻿use polars::frame::DataFrame;
-use polars::prelude::{col};
+﻿use polars::prelude::{col, CategoricalOrdering, DataType, LazyFrame};
 use crate::frames::hyperaktiv::load_patient_info;
 use crate::frames::{PatientInfoSelection, PatientInfoTranslation};
 
 /// Returns ADHD subtypes, gender, and age ranges of patients.
-pub fn adhd_subtypes_with_gender_and_age() -> DataFrame {
+pub fn adhd_subtypes_with_gender_and_age() -> LazyFrame {
     load_patient_info(false)
-        .translate_gender_and_adhd_type()
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
         .select([
-            col("Gender"),
-            col("ADHD Type"),
-            col("Age Range"),
+            col("Gender").cast(DataType::Categorical(None, CategoricalOrdering::default())),
+            col("ADHD Type").cast(DataType::Categorical(None, CategoricalOrdering::default())),
+            col("Age Range").cast(DataType::Categorical(None, CategoricalOrdering::default()))
         ])
-        .collect()
-        .unwrap()
 }
 
 /// Returns ADHD subtypes, age, and gender for each female patient
-pub fn adhd_subtypes_female() -> DataFrame {
+pub fn adhd_subtypes_female() -> LazyFrame {
     load_patient_info(false)
         .filter(col("SEX").eq(0))
-        .translate_gender_and_adhd_type()
+                .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
         .select([
-            col("Gender"),
-            col("ADHD Type"),
-            col("Age Range"),
+            col("Gender").cast(DataType::Categorical(None, CategoricalOrdering::default())),
+            col("ADHD Type").cast(DataType::Categorical(None, CategoricalOrdering::default())),
+            col("Age Range").cast(DataType::Categorical(None, CategoricalOrdering::default()))
         ])
-        .collect()
-        .unwrap()
 }
 
 /// Returns ADHD subtypes, age, and gender for each male patient
-pub fn adhd_subtypes_male() -> DataFrame {
+pub fn adhd_subtypes_male() -> LazyFrame {
     load_patient_info(false)
         .filter(col("SEX").eq(1))
-        .translate_gender_and_adhd_type()
+                .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
         .select([
-            col("Gender"),
-            col("ADHD Type"),
-            col("Age Range"),
+            col("Gender").cast(DataType::Categorical(None, CategoricalOrdering::default())),
+            col("ADHD Type").cast(DataType::Categorical(None, CategoricalOrdering::default())),
+            col("Age Range").cast(DataType::Categorical(None, CategoricalOrdering::default()))
         ])
-        .collect()
-        .unwrap()
 }
 
 /// Returns all patients who have ADHD-PH
-pub fn patient_info_has_adhd_hyperactive() -> DataFrame {
+pub fn patient_info_has_adhd_hyperactive() -> LazyFrame {
     load_patient_info(false)
         .filter(
             col("ADHD").eq(1).and(col("ADD").eq(0))
         )
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
-        .collect()
-        .unwrap()
+                .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
 }
 
 /// Returns all patients with inattentive symptoms present.
 /// Note - the dataset indicates the "ADD" field is only representative of
 /// inattentive traits being present. It does not account for PI or C, specifically. 
-pub fn patient_info_has_adhd_combined() -> DataFrame {
+pub fn patient_info_has_adhd_combined() -> LazyFrame {
     load_patient_info(false)
         .filter(
             col("ADHD").eq(1).and(col("ADD").eq(1))
         )
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
-        .collect()
-        .unwrap()
+                .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
 }
 
 
 #[cfg(test)]
 mod test {
+    use std::error::Error;
     use super::*;
-    use polars::export::arrow::legacy::utils::CustomIterTools;
+    use polars::datatypes::DataType;
     use polars::prelude::NamedFrom;
     use polars::series::Series;
     use crate::frames::subtypes::{adhd_subtypes_female, adhd_subtypes_male, adhd_subtypes_with_gender_and_age};
 
     #[test]
-    fn loads_adhd_subtypes_with_gender_and_age() {
-        let df = adhd_subtypes_with_gender_and_age();
-        assert!(!df.is_empty())
+    fn loads_adhd_subtypes_with_gender_and_age() -> Result<(), Box<dyn Error>> {
+        let df = adhd_subtypes_with_gender_and_age().collect()?;
+        assert!(!df.is_empty());
+        Ok(())
     }
 
     #[test]
-    fn loads_adhd_subtypes_female() {
-        let df = adhd_subtypes_female();
+    fn loads_adhd_subtypes_female() -> Result<(), Box<dyn Error>> {
+        let df = adhd_subtypes_female().collect()?;
         assert!(!df.is_empty());
-        assert_eq!(df.column("Gender").unwrap().tail(Some(1)), Series::new("Gender", &["Female"]));
-        assert!(df.column("Gender").unwrap().iter().all_equal());
+        assert_eq!(df.column("Gender").unwrap().tail(Some(1)), Series::new("Gender".into(), &["Female"]));
+        assert!(df.column("Gender").unwrap().cast(&DataType::String).unwrap().iter().all(|x| x == "Female".into()));
+        Ok(())
     }
 
     #[test]
-    fn loads_adhd_subtypes_male() {
-        let df = adhd_subtypes_male();
+    fn loads_adhd_subtypes_male() -> Result<(), Box<dyn Error>> {
+        let df = adhd_subtypes_male().collect()?;
         assert!(!df.is_empty());
-        assert_eq!(df.column("Gender").unwrap().tail(Some(1)), Series::new("Gender", &["Male"]));
-        assert!(df.column("Gender").unwrap().iter().all_equal());
+        assert_eq!(df.column("Gender").unwrap().tail(Some(1)), Series::new("Gender".into(), &["Male"]));
+        assert!(df.column("Gender").unwrap().cast(&DataType::String).unwrap().iter().all(|x| x == "Male".into()));
+        Ok(())
     }
 
     #[test]
-    fn loads_all_patients_adhd_primary_hyperactive() {
-        let df = patient_info_has_adhd_hyperactive();
+    fn loads_all_patients_adhd_predominantly_hyperactive() -> Result<(), Box<dyn Error>> {
+        let df = patient_info_has_adhd_hyperactive().collect()?;
         assert!(!df.is_empty());
-        assert_eq!(df.column("ADHD Type").unwrap().tail(Some(1)), Series::new("ADHD Type", &["ADHD-PH"]));
-        assert!(df.column("ADHD Type").unwrap().iter().all_equal());
+        assert_eq!(df.column("ADHD Type").unwrap().tail(Some(1)), Series::new("ADHD Type".into(), &["ADHD-PH"]));
+        assert!(df.column("ADHD Type").unwrap().cast(&DataType::String).unwrap().iter().all(|x| x == "ADHD-PH".into()));
+        Ok(())
     }
 
     #[test]
-    fn loads_all_patients_adhd_combined_type() {
-        let df = patient_info_has_adhd_combined();
+    fn loads_all_patients_adhd_predominantly_inattentive() -> Result<(), Box<dyn Error>> {
+        let df = patient_info_has_adhd_combined().collect()?;
         assert!(!df.is_empty());
-        assert_eq!(df.column("ADHD Type").unwrap().tail(Some(1)), Series::new("ADHD Type", &["ADHD-C"]));
-        assert!(df.column("ADHD Type").unwrap().iter().all_equal());
+        assert_eq!(df.column("ADHD Type").unwrap().tail(Some(1)), Series::new("ADHD Type".into(), &["ADHD-PI"]));
+        assert!(df.column("ADHD Type").unwrap().cast(&DataType::String).unwrap().iter().all(|x| x == "ADHD-PI".into()));
+        Ok(())
     }
 
 }

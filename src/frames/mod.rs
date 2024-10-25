@@ -1,6 +1,5 @@
 ﻿use std::ops::Deref;
-use polars::frame::DataFrame;
-use polars::prelude::{col, lit, when, LazyFrame};
+use polars::prelude::{col, lit, when, Expr, LazyFrame};
 use crate::frames::enums::{Age, Gender, MentalHealthCondition};
 use crate::frames::hyperaktiv::load_patient_info;
 
@@ -12,15 +11,22 @@ pub mod subtypes;
 
 /// This module exposes queries that provide data on mental health conditions
 pub mod mental_health;
+
+/// This module exposes queries that provide data about patient medication.
 pub mod medication;
 
-/// Returns a full, translated and filtered version of the patient_info dataset from Hyperaktiv
-pub fn get_all_patient_info() -> DataFrame {
-    load_patient_info(false)
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
-        .collect()
-        .unwrap()
+/// Returns a translated and filtered version of the patient_info dataset from Hyperaktiv with default column selection.
+pub fn get_all_patient_info(with_controls: bool) -> LazyFrame {
+    load_patient_info(with_controls)
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
+}
+
+/// Returns full, untranslated, unfiltered Hyperaktiv patient info data 
+pub fn get_all_patient_info_raw(with_controls: bool) -> LazyFrame {
+    load_patient_info(with_controls)
 }
 
 pub mod enums {
@@ -118,10 +124,12 @@ pub mod enums {
         }
     }
 
-}
+} 
 
 pub trait PatientInfoTranslation {
-    fn translate_gender_and_adhd_type(&mut self) -> Self;
+    fn with_age_range_translation(&mut self) -> Self;
+    fn with_adhd_type_translation(&mut self) -> Self;
+    fn with_gender_translation(&mut self) -> Self;
 }
 
 pub trait PatientInfoFilter {
@@ -131,14 +139,41 @@ pub trait PatientInfoFilter {
 }
 
 pub trait PatientInfoSelection {
-    fn select_patient_info_columns(&mut self) -> Self;
+    fn select_default_patient_info_columns(&mut self) -> Self;
+    fn select_patient_info_columns(&mut self, fields: Vec<&str>) -> Self;
 }
 
 impl PatientInfoTranslation for LazyFrame {
     // TODO: Not super happy about cloning here, see the actual implementation for ideas on a potentially better way to do this.
     // Note that a lot of the mechanisms that would make this easier are internal to the LazyFrame - so this may end up being the best path anyway.
     // https://github.com/pola-rs/polars/blob/main/crates/polars-lazy/src/frame/mod.rs
-    fn translate_gender_and_adhd_type(&mut self) -> LazyFrame {
+    fn with_age_range_translation(&mut self) -> Self {
+        self.deref().clone().with_column(
+            when(
+                col("AGE").eq(Age::SeventeenToTwentyNine as i32)
+            )
+                .then(lit("17-29"))
+                .when(col("AGE").eq(Age::ThirtyToThirtyNine as i32))
+                .then(lit("30-39"))
+                .when(col("AGE").eq(Age::FortyToFortyNine as i32))
+                .then(lit("40-49"))
+                .otherwise(lit("50-67"))
+                .alias("Age Range")
+        )
+    }
+    fn with_adhd_type_translation(&mut self) -> Self {
+        self.deref().clone().with_column(
+            when(
+                col("ADHD")
+                    .eq(1)
+                    .and(col("ADD").eq(1))
+            ).then(
+                lit("ADHD-PI")
+            ).otherwise(lit("ADHD-PH"))
+                .alias("ADHD Type")
+        )
+    }
+    fn with_gender_translation(&mut self) -> LazyFrame {
         self.deref().clone().with_column(
             when(
                 col("SEX").eq(Gender::Female as i32)
@@ -149,34 +184,6 @@ impl PatientInfoTranslation for LazyFrame {
             )
                 .alias("Gender")
         )
-            .with_column(
-                when(
-                    col("ADHD")
-                        .eq(1)
-                        .and(col("ADD").eq(1))
-                ).then(
-                    lit("ADHD-C")
-                )
-                    .when(col("ADHD").eq(1))
-                    .then(lit("ADHD-PH"))
-                    // This condition doesn't actually exist in the data set, explicitly - but inattentive symptoms are implied by a '1' in the ADD column.
-                    // Patients with this flag could be considered of the ADHD-Combined type or ADHD-Primary Inattentive type.
-                    // If we did have the presence of a 1 in the ADD column, but a 0 in the ADHD column - this would strongly imply ADHD-PI.
-                    .otherwise(lit("ADHD-PI"))
-                    .alias("ADHD Type")
-            )
-            .with_column(
-                when(
-                    col("AGE").eq(Age::SeventeenToTwentyNine as i32)
-                )
-                    .then(lit("17-29"))
-                    .when(col("AGE").eq(Age::ThirtyToThirtyNine as i32))
-                    .then(lit("30-39"))
-                    .when(col("AGE").eq(Age::FortyToFortyNine as i32))
-                    .then(lit("40-49"))
-                    .otherwise(lit("50-67"))
-                    .alias("Age Range")
-            )
     }
 }
 
@@ -220,7 +227,7 @@ impl PatientInfoFilter for LazyFrame {
 }
 
 impl PatientInfoSelection for LazyFrame {
-    fn select_patient_info_columns(&mut self) -> Self {
+    fn select_default_patient_info_columns(&mut self) -> Self {
         self.deref().clone().select(
             [
                 col("ID"),
@@ -242,5 +249,14 @@ impl PatientInfoSelection for LazyFrame {
                 col("MED_Stimulants")
             ]
         )
+    }
+
+    fn select_patient_info_columns(&mut self, fields: Vec<&str>) -> Self {
+        let mut _col_selection: Vec<Expr> = Vec::new();
+        for c in fields {
+            _col_selection.push(col(c));    
+        }
+        
+        self.deref().clone().select(_col_selection)
     }
 }

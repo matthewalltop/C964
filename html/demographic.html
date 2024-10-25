@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <div>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+
+        <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
+
+        <div id="plotly-html-element" class="plotly-graph-div" style="height:100%; width:100%;"></div>
+
+        <script type="module">
+            const graph_div = document.getElementById("plotly-html-element");
+            await Plotly.newPlot(graph_div, {"data":[{"type":"bar","x":["50-67","40-49","17-29","30-39","50-67","30-39","40-49","17-29"],"y":[6.0,10.0,6.0,14.0,7.0,9.0,13.0,15.0],"name":"ADHD-PH","marker":{"opacity":1.0,"size":10}},{"type":"bar","x":["50-67","30-39","50-67","30-39","40-49","17-29","17-29"],"y":[1.0,4.0,2.0,2.0,7.0,4.0,3.0],"name":"ADHD-PI","marker":{"opacity":1.0,"size":10}}],"layout":{"title":{"text":"ADHD by Gender and Age","font":{"family":"","size":0,"color":"rgb(0, 0, 0)"},"x":0.5,"y":0.9},"legend":{"title":{"text":"ADHD Type","font":{"family":"","size":0,"color":"rgb(0, 0, 0)"},"x":0.5,"y":0.9}},"xaxis":{"ticktext":["SeventeenToTwentyNine","ThirtyToThirtyNine","FortyToFortyNine","FiftyToSixtySeven"],"showline":true},"yaxis":{"range":[1.0,25.0],"separatethousands":false,"showline":true},"boxmode":"group","barmode":"group"},"config":{}});
+        </script>
+    </div>
+</body>
+
+</html>

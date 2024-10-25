@@ -7,8 +7,10 @@ use crate::frames::hyperaktiv::load_patient_info;
 pub fn patient_mental_health_conditions() -> DataFrame {
     load_patient_info(false)
         .with_presence_of_mental_health_condition()
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
@@ -17,8 +19,10 @@ pub fn patient_mental_health_conditions() -> DataFrame {
 pub fn patients_without_mental_health_conditions() -> DataFrame {
     load_patient_info(false)
         .with_absence_of_mental_health_condition()
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
@@ -28,8 +32,10 @@ pub fn patients_without_mental_health_conditions() -> DataFrame {
 pub fn patient_info_has_bipolar_disorder() -> DataFrame {
     load_patient_info(false)
         .with_presence_of_given_mental_health_condition(MentalHealthCondition::BipolarDisorder)
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
@@ -39,8 +45,10 @@ pub fn patient_info_has_bipolar_disorder() -> DataFrame {
 pub fn patient_info_has_unipolar_depression() -> DataFrame {
     load_patient_info(false)
         .with_presence_of_given_mental_health_condition(MentalHealthCondition::UnipolarDepression)
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
@@ -50,8 +58,10 @@ pub fn patient_info_has_unipolar_depression() -> DataFrame {
 pub fn patient_info_has_anxiety() -> DataFrame {
     load_patient_info(false)
         .with_presence_of_given_mental_health_condition(MentalHealthCondition::AnxietyDisorder)
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
@@ -61,8 +71,10 @@ pub fn patient_info_has_anxiety() -> DataFrame {
 pub fn patient_info_has_substance_abuse_disorder() -> DataFrame {
     load_patient_info(false)
         .with_presence_of_given_mental_health_condition(MentalHealthCondition::SubstanceAbuseDisorder)
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
@@ -72,8 +84,10 @@ pub fn patient_info_has_substance_abuse_disorder() -> DataFrame {
 pub fn patient_info_has_other_mental_health_condition() -> DataFrame {
     load_patient_info(false)
         .with_presence_of_given_mental_health_condition(MentalHealthCondition::Other)
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+        .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
@@ -81,9 +95,8 @@ pub fn patient_info_has_other_mental_health_condition() -> DataFrame {
 
 #[cfg(test)]
 mod test {
-    use polars::export::arrow::legacy::utils::CustomIterTools;
-    use polars::prelude::{IntoLazy, NamedFrom, Series};
-    use super::*;
+use super::*;
+    use polars::prelude::*;
 
     #[test]
     fn loads_all_patients_with_a_mental_health_condition() {
@@ -115,40 +128,40 @@ mod test {
     fn loads_all_patients_with_bipolar_disorder() {
         let df = patient_info_has_bipolar_disorder();
         assert!(!df.is_empty());
-        assert_eq!(df.column("BIPOLAR").unwrap().tail(Some(1)), Series::new("BIPOLAR", &[1]));
-        assert!(df.column("BIPOLAR").unwrap().iter().all_equal());
+        assert_eq!(df.column("BIPOLAR").unwrap().tail(Some(1)), Series::new("BIPOLAR".into(), &[1]));
+        assert!(df.column("BIPOLAR").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
     }
 
     #[test]
     fn loads_all_patients_with_unipolar_depression() {
         let df = patient_info_has_unipolar_depression();
         assert!(!df.is_empty());
-        assert_eq!(df.column("UNIPOLAR").unwrap().tail(Some(1)), Series::new("UNIPOLAR", &[1]));
-        assert!(df.column("UNIPOLAR").unwrap().iter().all_equal());
+        assert_eq!(df.column("UNIPOLAR").unwrap().tail(Some(1)), Series::new("UNIPOLAR".into(), &[1]));
+        assert!(df.column("UNIPOLAR").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
     }
 
     #[test]
     fn loads_all_patients_with_anxiety() {
         let df = patient_info_has_anxiety();
         assert!(!df.is_empty());
-        assert_eq!(df.column("ANXIETY").unwrap().tail(Some(1)), Series::new("ANXIETY", &[1]));
-        assert!(df.column("ANXIETY").unwrap().iter().all_equal());
+        assert_eq!(df.column("ANXIETY").unwrap().tail(Some(1)), Series::new("ANXIETY".into(), &[1]));
+        assert!(df.column("ANXIETY").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
     }
 
     #[test]
     fn loads_all_patients_with_substance_abuse_disorder() {
         let df = patient_info_has_substance_abuse_disorder();
         assert!(!df.is_empty());
-        assert_eq!(df.column("SUBSTANCE").unwrap().tail(Some(1)), Series::new("SUBSTANCE", &[1]));
-        assert!(df.column("SUBSTANCE").unwrap().iter().all_equal());
+        assert_eq!(df.column("SUBSTANCE").unwrap().tail(Some(1)), Series::new("SUBSTANCE".into(), &[1]));
+        assert!(df.column("SUBSTANCE").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
     }
 
     #[test]
     fn loads_all_patients_with_other_mental_health_condition() {
         let df = patient_info_has_other_mental_health_condition();
         assert!(!df.is_empty());
-        assert_eq!(df.column("OTHER").unwrap().tail(Some(1)), Series::new("OTHER", &[1]));
-        assert!(df.column("OTHER").unwrap().iter().all_equal());
+        assert_eq!(df.column("OTHER").unwrap().tail(Some(1)), Series::new("OTHER".into(), &[1]));
+        assert!(df.column("OTHER").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
     }
     
 }

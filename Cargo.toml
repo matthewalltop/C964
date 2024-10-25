@@ -7,17 +7,19 @@ edition = "2021"
 
 [dependencies]
 plotlars = "0.5.1"
-evcxr = "0.17.0"
+evcxr = "0.18.0"
 hashbrown = { version = "0.15.0", features = ["rayon", "serde"] }
 polars = { version = "0.43.1", features = [
     "lazy", 
     "csv",
+    "cum_agg",
     "ndarray"
 ] }
 ndarray = "0.16.1"
 linfa = "0.7.0"
 linfa-bayes = "0.7.0"
-linfa-linear = "0.7.0"
+linfa-logistic = "0.7.0"
+evcxr_jupyter = "0.18.0"
 #linfa-elasticnet = "0.6.1"
 #linfa-trees = "0.6.1"
 #linfa-svm = "0.6.1"

@@ -15,8 +15,10 @@ pub fn patient_takes_medication() -> DataFrame {
                 col("MED_Sleep").eq(1)).or(
                 col("MED_Analgesics_Opioids").eq(1)).or(
                 col("MED_Stimulants").eq(1)))
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+                .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
@@ -33,8 +35,10 @@ pub fn patient_does_not_take_medication() -> DataFrame {
                 col("MED_Sleep").is_null()).and(
                 col("MED_Analgesics_Opioids").is_null()).and(
                 col("MED_Stimulants").is_null()))
-        .translate_gender_and_adhd_type()
-        .select_patient_info_columns()
+                .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
         .collect()
         .unwrap()
 }
