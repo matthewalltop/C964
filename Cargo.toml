@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 plotlars = "0.5.1"
-evcxr = "0.18.0"
 hashbrown = { version = "0.15.0", features = ["rayon", "serde"] }
 polars = { version = "0.43.1", features = [
     "lazy", 
@@ -19,7 +18,15 @@ ndarray = "0.16.1"
 linfa = "0.7.0"
 linfa-bayes = "0.7.0"
 linfa-logistic = "0.7.0"
-evcxr_jupyter = "0.18.0"
+serde = "1.0.213"
+warp = "0.3"
+tokio = { version = "1.41.0", features = ["rt", "macros", "rt-multi-thread"] }
+axum = "0.7.7"
+tracing-subscriber = "0.3.18"
+serde_json = "1.0.128"
+tower-http = { version = "0.6.1", features = ["cors"] }
+tower = "0.5.1"
+azure-functions = "0.11.0"
 #linfa-elasticnet = "0.6.1"
 #linfa-trees = "0.6.1"
 #linfa-svm = "0.6.1"

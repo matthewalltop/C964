@@ -31,20 +31,19 @@ pub fn get_all_patient_info_raw(with_controls: bool) -> LazyFrame {
 
 pub mod enums {
     use std::fmt;
-    
-    #[derive(Debug)]
+    use serde::{Deserialize, Serialize};
+
+    #[derive(Debug, Serialize, Deserialize)]
     pub enum Gender {
         Female = 0,
         Male = 1
     }
-
     impl fmt::Display for Gender {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             fmt::Debug::fmt(self, f)
         }
     }
-
-    #[derive(Debug)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub enum Age {
         SeventeenToTwentyNine = 1,
         ThirtyToThirtyNine = 2,
@@ -57,8 +56,8 @@ pub mod enums {
             fmt::Debug::fmt(self, f)
         }
     }
-    
-    #[derive(Debug)]
+
+    #[derive(Debug, Serialize, Deserialize)]
     pub enum MentalHealthCondition {
         BipolarDisorder = 1,
         UnipolarDepression = 2,

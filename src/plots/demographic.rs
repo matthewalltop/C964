@@ -1,14 +1,13 @@
 ﻿use error::Error;
 use std::error;
-use std::path::Path;
 use plotlars::{Axis, BarPlot, Plot, Text};
 use polars::prelude::{col, DataType};
 use crate::frames::enums::Age;
 use crate::frames::subtypes::adhd_subtypes_with_gender_and_age;
-use crate::plots;
+use crate::http::responses::PlotlyGraph;
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
-pub fn plot_by_adhd_type_with_gender_and_age() -> Result<(), Box<dyn Error>> {
+pub fn plot_by_adhd_type_with_gender_and_age() -> Result<String, Box<dyn Error>> {
     let df = adhd_subtypes_with_gender_and_age()
         .group_by([col("Gender"), col("Age Range"), col("ADHD Type")])
         .agg([
@@ -21,9 +20,6 @@ pub fn plot_by_adhd_type_with_gender_and_age() -> Result<(), Box<dyn Error>> {
             col("ADHD Subtypes")
         ])
         .collect()?;
-    
-    // See if I'm even getting output here.
-    // println!("{}", df);
     
     let plots = BarPlot::builder()
         .data(&df)
@@ -40,13 +36,16 @@ pub fn plot_by_adhd_type_with_gender_and_age() -> Result<(), Box<dyn Error>> {
         )
         .x_axis(&Axis::new().show_line(true).tick_labels(vec![Age::SeventeenToTwentyNine.to_string(), Age::ThirtyToThirtyNine.to_string(), Age::FortyToFortyNine.to_string(), Age::FiftyToSixtySeven.to_string()]))
         .y_axis(&Axis::new().show_line(true).value_range(vec![1.0, 25.0]).value_thousands(false))
-        .build()
-        .get_layout()
-        .to_json();
-        // .write_html("html/demographic.html");
-        // .plot();
+        .build();
+        
+    let layout = plots.get_layout().to_json();
+    let mut traces: Vec<String> = vec![];
+    for x in plots.get_traces() {
+        let trace = x.as_ref();
+        traces.push(trace.to_json());
+    }
     
-    println!("{}", plots);
-    
-    Ok(())
+    let response = PlotlyGraph::new(layout, traces);
+
+    Ok(serde_json::to_string(&response).unwrap())
 }

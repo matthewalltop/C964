@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'bulma/bulma';
+
+@media (prefers-color-scheme: dark) {
+  // Thanks, Copilot.
+  :root {
+    --background: #000;
+    --on-background: #fff;
+    --surface: #121212;
+    --on-surface: #fff;
+    --primary: #ffeb3b;
+    --on-primary: #000;
+    --secondary: #ff5722;
+    --on-secondary: #fff;
+    --error: #f44336;
+    --on-error: #fff;
+    --warning: #ff9800;
+    --on-warning: #fff;
+    --info: #2196f3;
+    --on-info: #fff;
+    --success: #4caf50;
+    --on-success: #fff;
+  }
+}

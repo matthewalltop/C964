@@ -1,0 +1,15 @@
+<section class="mt-2">
+  <h1>Welcome to my Capstone project.</h1>
+  <div>
+
+ @if(plotlyResponse$ | async; as graph) {
+    @defer() {
+      <plotly-plot [layout]="graph.layout" [data]="graph.data"></plotly-plot>
+    }
+} @else {
+  <p>
+    Loading...
+  </p>
+}
+</div>
+</section>
