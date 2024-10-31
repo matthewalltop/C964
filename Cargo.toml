@@ -23,7 +23,7 @@ polars = { version = "0.43.1", features = [
 ndarray = { version = "0.15", features = ["approx"] }
 ndarray-stats = "0.5.0"
 linfa = { version = "0.7.0"} # features = ["openblas-system"]
-#linfa-bayes = "0.7.0"
+linfa-bayes = "0.7.0"
 linfa-logistic = "0.7.0"
 serde = "1.0.213"
 # warp = "0.3"
