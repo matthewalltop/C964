@@ -16,6 +16,7 @@ For the evaluator:
 - `hyperaktiv` - Contains the `hyperaktiv` dataset, sourced from [Kaggle](https://www.kaggle.com/datasets/arashnic/adhd-diagnosis-data)
 - `src` - Contains Rust source code for the project.
     - `algo` - Contains application of machine learning algorithms.
+    - `api` - Contains API handlers for axum.
     - `experiments` - Contains higher-order experiments on data utilizing applied algorithms in `algo`  
     - `frames` - Contains data frames built on top of the `hyperaktiv` data. This is where data is enriched through cleaning & transformations.'
     - `http` - Contains elements for web interop

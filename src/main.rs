@@ -6,8 +6,9 @@ mod experiments;
 mod algo;
 mod plots;
 mod http;
+mod api;
 
-use axum::{routing::{get},  Router};
+use axum::{routing::{get}, Router};
 use axum::extract::Query;
 use axum::http::{Method};
 use polars::io::SerWriter;
@@ -19,17 +20,13 @@ use crate::http::requests::queries::{DemographicsParams};
 
 #[tokio::main]
 async fn main() {
-    // TODO: I don't actually need to serve the web app this way - but would be nice to redirect to it.
-    // let frontend = async {
-    //     let app = Router::new().route("/", get(html));
-    //     serve(app, 3000).await;
-    // };
-    
     tracing_subscriber::fmt::init();
 
     let cors_layer = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
         .allow_origin(AllowOrigin::any());
+    
+    // TODO: Revisit this & restrict its use. 
     // https://github.com/tokio-rs/axum/blob/main/examples/cors/src/main.rs
     // .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
     
