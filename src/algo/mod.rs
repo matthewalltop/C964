@@ -133,12 +133,12 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split
 
 
 pub struct MLAlgorithmResponse {
-    raw_cf_matrix: ConfusionMatrix<&'static str>,
-    accuracy: f32,
-    precision: f32,
-    recall: f32,
-    threshold: Option<f64>,
-    iterations: Option<u64>
+    pub raw_cf_matrix: ConfusionMatrix<&'static str>,
+    pub accuracy: f32,
+    pub precision: f32,
+    pub recall: f32,
+    pub threshold: Option<f64>,
+    pub iterations: Option<u64>
 }
 
 impl MLAlgorithmResponse {
