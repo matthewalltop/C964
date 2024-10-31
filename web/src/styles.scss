@@ -1,8 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
-@use 'bulma/bulma';
+@use '../node_modules/fontawesome-free/css/all.min.css';
+@use "bulma/sass/base";
+@use "bulma/sass/themes";
+@use 'bulma/sass/elements/button';
+@use 'bulma/sass/elements/box';
+@use 'bulma/sass/components/dropdown';
+@use 'bulma/sass/grid/columns';
 
+@use '../node_modules/ag-grid-community/styles/' as ag;
+
+/* Bulma Dark Theme */
 @media (prefers-color-scheme: dark) {
-  // Thanks, Copilot.
   :root {
     --background: #000;
     --on-background: #fff;
@@ -20,5 +28,18 @@
     --on-info: #fff;
     --success: #4caf50;
     --on-success: #fff;
+  }
+}
+
+@include ag.grid-styles(( theme: quartz ));
+
+.ag-theme-quartz-dark {
+  .ag-header-row {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .ag-row {
+    font-size: 12px;
   }
 }

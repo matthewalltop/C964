@@ -168,6 +168,12 @@ impl PatientInfoTranslation for LazyFrame {
                     .and(col("ADD").eq(1))
             ).then(
                 lit("ADHD-PI")
+            ).when(
+                col("ADHD")
+                    .eq(0)
+                    .and(col("ADD").eq(0))
+            ).then(
+                lit("N/A")
             ).otherwise(lit("ADHD-PH"))
                 .alias("ADHD Type")
         )

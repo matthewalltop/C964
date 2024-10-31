@@ -61,6 +61,8 @@ RUN adduser \
     appuser
 USER appuser
 
+
+COPY data /bin/data
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/server /bin/
 

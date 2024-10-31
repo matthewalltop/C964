@@ -2,46 +2,72 @@
 #[allow(dead_code)]
 
 mod frames;
-mod functions;
 mod experiments;
 mod algo;
 mod plots;
 mod http;
 
-
-
 use axum::{routing::{get},  Router};
+use axum::extract::Query;
 use axum::http::{Method};
+use polars::io::SerWriter;
 use tower::ServiceBuilder;
-use crate::plots::demographic::plot_by_adhd_type_with_gender_and_age;
 use tower_http::cors::{AllowOrigin, CorsLayer};
+use crate::plots::adhd_types::{plot_by_adhd_type_by_age_group, plot_by_adhd_type_by_gender};
+use crate::frames::subtypes::adhd_subtypes_with_gender_and_age;
+use crate::http::requests::queries::{DemographicsParams};
 
 #[tokio::main]
 async fn main() {
+    // TODO: I don't actually need to serve the web app this way - but would be nice to redirect to it.
+    // let frontend = async {
+    //     let app = Router::new().route("/", get(html));
+    //     serve(app, 3000).await;
+    // };
     
     tracing_subscriber::fmt::init();
 
     let cors_layer = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
         .allow_origin(AllowOrigin::any());
+    // https://github.com/tokio-rs/axum/blob/main/examples/cors/src/main.rs
+    // .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
     
     // build our application with a route
     let app = Router::new()
         .route("/", get(root))
-        .route("/demographic", get(plot_by_adhd_type_with_gender_and_age().expect("unwrapped")))
+        .route("/subtype", get(subtype_handler))
+        .route("/demographic", get(demographic_handler))
         .layer(ServiceBuilder::new()
             .layer(cors_layer));
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
-    azure_functions::worker_main(std::env::args(), functions::EXPORTS);
 }
 
 
 
 async fn root () -> &'static str {
     "Hello World!"
+}
+
+
+async fn demographic_handler(demographics_query: Query<DemographicsParams>) -> String {
+    let qry = demographics_query.0;
+    let gender = qry.gender.unwrap_or_else(|| "".into());
+    
+    if !gender.is_empty() {
+        plot_by_adhd_type_by_gender().unwrap()
+    } else {
+        plot_by_adhd_type_by_age_group().unwrap()
+    }
+}
+
+
+
+async fn subtype_handler() -> String {
+    serde_json::to_string(&adhd_subtypes_with_gender_and_age().collect().unwrap()).unwrap()
 }
 
 // async fn demographic(qry: Option<Json<Demographics>>) -> &'static (String, Vec<String>) {

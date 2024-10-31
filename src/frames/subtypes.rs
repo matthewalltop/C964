@@ -9,6 +9,7 @@ pub fn adhd_subtypes_with_gender_and_age() -> LazyFrame {
         .with_adhd_type_translation()
         .with_gender_translation()
         .select([
+            col("ID").cast(DataType::Int32),
             col("Gender").cast(DataType::Categorical(None, CategoricalOrdering::default())),
             col("ADHD Type").cast(DataType::Categorical(None, CategoricalOrdering::default())),
             col("Age Range").cast(DataType::Categorical(None, CategoricalOrdering::default()))
@@ -37,6 +38,7 @@ pub fn adhd_subtypes_male() -> LazyFrame {
         .with_adhd_type_translation()
         .with_gender_translation()
         .select([
+            col("ID").cast(DataType::Int32),
             col("Gender").cast(DataType::Categorical(None, CategoricalOrdering::default())),
             col("ADHD Type").cast(DataType::Categorical(None, CategoricalOrdering::default())),
             col("Age Range").cast(DataType::Categorical(None, CategoricalOrdering::default()))
@@ -58,12 +60,24 @@ pub fn patient_info_has_adhd_hyperactive() -> LazyFrame {
 /// Returns all patients with inattentive symptoms present.
 /// Note - the dataset indicates the "ADD" field is only representative of
 /// inattentive traits being present. It does not account for PI or C, specifically. 
-pub fn patient_info_has_adhd_combined() -> LazyFrame {
+pub fn patient_info_has_adhd_inattentive() -> LazyFrame {
     load_patient_info(false)
         .filter(
             col("ADHD").eq(1).and(col("ADD").eq(1))
         )
                 .with_age_range_translation()
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .select_default_patient_info_columns()
+}
+
+/// Returns all patients from the control group, without ADHD present.
+pub fn patient_info_does_not_have_adhd() -> LazyFrame {
+    load_patient_info(false)
+        .filter(
+            col("ADHD").eq(0).and(col("ADD").eq(0))
+        )
+        .with_age_range_translation()
         .with_adhd_type_translation()
         .with_gender_translation()
         .select_default_patient_info_columns()
@@ -115,7 +129,7 @@ mod test {
 
     #[test]
     fn loads_all_patients_adhd_predominantly_inattentive() -> Result<(), Box<dyn Error>> {
-        let df = patient_info_has_adhd_combined().collect()?;
+        let df = patient_info_has_adhd_inattentive().collect()?;
         assert!(!df.is_empty());
         assert_eq!(df.column("ADHD Type").unwrap().tail(Some(1)), Series::new("ADHD Type".into(), &["ADHD-PI"]));
         assert!(df.column("ADHD Type").unwrap().cast(&DataType::String).unwrap().iter().all(|x| x == "ADHD-PI".into()));

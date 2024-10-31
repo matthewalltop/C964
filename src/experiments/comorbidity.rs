@@ -13,11 +13,12 @@ pub fn comorbidity_of_bipolar_disorder() -> Result<(), Box<dyn std::error::Error
     let df = get_all_patient_info_raw(false)
         .select([
             col("ADHD"),
+            col("ADD"),
             col("BIPOLAR")
         ])
         .collect()?;
 
-    let _accuracy = apply_binomial_logistic_regression(df, "BIPOLAR");    
+    let _accuracy = apply_binomial_logistic_regression(df, vec!["ADHD", "ADD"], 0.20);    
     
     Ok(())
 }

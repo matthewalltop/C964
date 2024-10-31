@@ -9,17 +9,24 @@ edition = "2021"
 plotlars = "0.5.1"
 hashbrown = { version = "0.15.0", features = ["rayon", "serde"] }
 polars = { version = "0.43.1", features = [
-    "lazy", 
+    "lazy",
+    "ipc",
+    "json",
+    "serde",
+    "serde-lazy",
     "csv",
     "cum_agg",
     "ndarray"
 ] }
-ndarray = "0.16.1"
-linfa = "0.7.0"
-linfa-bayes = "0.7.0"
+
+# linfa uses this version
+ndarray = { version = "0.15", features = ["approx"] }
+ndarray-stats = "0.5.0"
+linfa = { version = "0.7.0"} # features = ["openblas-system"]
+#linfa-bayes = "0.7.0"
 linfa-logistic = "0.7.0"
 serde = "1.0.213"
-warp = "0.3"
+# warp = "0.3"
 tokio = { version = "1.41.0", features = ["rt", "macros", "rt-multi-thread"] }
 axum = "0.7.7"
 tracing-subscriber = "0.3.18"

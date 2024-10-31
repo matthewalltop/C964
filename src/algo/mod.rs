@@ -1,51 +1,115 @@
-﻿use linfa::{DatasetBase};
-use linfa::prelude::{Fit, Predict}; // ToConfusionMatrix
-use linfa_logistic::{LogisticRegression};
+﻿use linfa::prelude::{ConfusionMatrix, DatasetBase, Fit, Predict, ToConfusionMatrix};
+use linfa_logistic::LogisticRegression;
+use ndarray::{s, ArrayBase, Dim, OwnedRepr};
 use polars::frame::DataFrame;
-use polars::prelude::{DataType, Float64Type, IndexOrder};
+use polars::prelude::{col, Float64Type, IndexOrder};
+
 
 /// Applies binomial logistic regression to the provided data and dependent variable.
-pub fn apply_binomial_logistic_regression(df: DataFrame, independent: &str) -> Result<f32, Box<dyn std::error::Error>> {
-    // Extract the independent variable from the dataset & cast it to a float64 value.
-    let series = df.column(independent)?.cast(&DataType::Float64)?;
-    let target = series.f64()?;
+pub fn apply_binomial_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> Result<LogisticRegressionResponse, Box<dyn std::error::Error>> {
+    // Convert the data frame to a 2D array to prepare it for logistic regression.
+    let feature_array = df.to_ndarray::<Float64Type>(IndexOrder::C)?;
 
-    let mut features = df.drop(independent)?;
-    // Ensure 
-    for col in features.get_column_names_owned() {
-        let cast = df.column(&col)?
-            .cast(&DataType::Float64)
-            .expect("Failed to cast");
+    // Features are the factors to evaluate a positive/negative result for the target value.
+    // Targets are the success/failure criteria.
+    let (features, targets) = (
+        feature_array.slice(s![.., 0..2]).to_owned(),
+        feature_array.column(2).to_owned()
+    );
 
-        features.with_column(cast)?;
+    // Create the training & test dataset - we'll split the training set off as 20% of the original training set.
+    let (train, test) = DatasetBase::new(features, targets)
+        .map_targets(|x| if *x as u32 == 1 { "Positive" } else { "Negative" })
+        .with_feature_names(feature_names)
+        .split_with_ratio(split_ratio);
+    
+    // Establish variables for determining the most accurate combination of settings for the model.
+    // Set the initial matrix to a threshold of 0.01 with max iterations of 100.
+    let mut best_cf_matrix = create_confusion_matrix(&train, &test, 0.01, 100);
+    let mut best_iterations: u64 = 0;
+    let mut best_threshold: f64 = 0.0;
+    let mut curr_threshold: f64 = 0.02;
+    
+    // Increase the number of iterations & the threshold value within given bounds.
+    // This will repeatedly predict the desired result and return the combination of settings that are most accurate.
+    for max_iterations in (1000..5000).step_by(500) {
+        while curr_threshold < 1.0 {
+            // Create a new confusion matrix with incremented settings.
+            let confusion_matrix = create_confusion_matrix(&train, &test, curr_threshold, max_iterations);
+            
+            // If we've done better than previous runs, track those settings.
+            if confusion_matrix.accuracy() > best_cf_matrix.accuracy() {
+                best_cf_matrix = confusion_matrix;
+                best_threshold = curr_threshold;
+                best_iterations = max_iterations;
+            }
+            curr_threshold += 0.01;
+        }
+        // Reset the threshold for the next run.
+        curr_threshold = 0.02;
     }
-
-    let features_ndarray = features.to_owned().to_ndarray::<Float64Type>(IndexOrder::C)?;
-    let target_ndarray = target.to_ndarray()?.to_owned();
-    let (dataset_training, dataset_validation) = DatasetBase::new(features_ndarray, target_ndarray)
-        .map_targets(|x| *x == 1.0)
-        .split_with_ratio(0.80);
-
     
-    // Train the model
-    let model = LogisticRegression::default()
-        .max_iterations(150)
-        .fit(&dataset_training)?;
-
-    // Predictions
-    let predict = model.predict(&dataset_validation);
-   // let confusion_matrix = predict.confusion_matrix(&dataset_training)?; 
-    
-    println!("{}", predict);
-   // println!("{}", confusion_matrix.accuracy());
-
-    Ok(1.0)
+    Ok(LogisticRegressionResponse::new(best_cf_matrix, best_threshold, best_iterations))
 }
 
-/// Applies multinomial logistic regression to the provided data and dependent variable.
-// pub fn apply_multinomial_logistic_regression(df: DataFrame, independent: &str) -> Result<f32, Box<dyn std::error::Error>> {
-//     unimplemented!()
-// }
+
+fn create_confusion_matrix(
+    train: &DatasetBase<
+        ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
+        ArrayBase<OwnedRepr<&'static str>, Dim<[usize; 1]>>,
+    >,
+    test: &DatasetBase<
+        ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
+        ArrayBase<OwnedRepr<&'static str>, Dim<[usize; 1]>>,
+    >,
+    threshold: f64,
+    max_iterations: u64) -> ConfusionMatrix<&'static str> {
+  
+    let model = LogisticRegression::default()
+        .max_iterations(max_iterations)
+        .fit(train)
+        .expect("Can train the model");
+
+    // Predict
+    let predict = model.set_threshold(threshold).predict(test);
+    
+    let confusion_matrix = predict
+        .confusion_matrix(test)
+        .expect("Can create a confusion matrix");
+    
+    confusion_matrix
+}
+
+pub struct LogisticRegressionResponse {
+    raw_cf_matrix: ConfusionMatrix<&'static str>,
+    accuracy: f32,
+    precision: f32,
+    recall: f32,
+    threshold: f64,
+    iterations: u64
+}
+
+impl LogisticRegressionResponse {
+    pub fn new(
+        cf_matrix: ConfusionMatrix<&'static str>,
+        threshold: f64,
+        iterations: u64) ->  LogisticRegressionResponse{
+
+        let matrix = cf_matrix.to_owned();
+        let accuracy = matrix.accuracy();
+        let precision = matrix.precision();
+        let recall = matrix.recall();
+
+        Self {
+            raw_cf_matrix: cf_matrix,
+            accuracy,
+            precision,
+            recall,
+            threshold,
+            iterations
+        }
+    }
+}
 
 
 #[cfg(test)]
@@ -53,18 +117,30 @@ mod test {
     use polars::prelude::col;
     use crate::frames::get_all_patient_info_raw;
     use super::*;
-    
+
     #[test]
-    fn applies_binomial_logistic_regression() {
-        let df = get_all_patient_info_raw(false)
+    fn applies_logistic_regression() {
+        // NOTE: Use the 'with controls' set for machine learning tasks.
+        // The control group contains additional, healthy patients to augment the data set.
+        let df = get_all_patient_info_raw(true)
             .select([
                 col("ADHD"),
+                col("ADD"),
                 col("BIPOLAR")
             ])
             .collect()
             .unwrap();
+
+        let response = apply_binomial_logistic_regression(df, vec!["ADHD", "ADD"], 0.70);
+        assert!(Result::is_ok(&response));
         
-        let result = apply_binomial_logistic_regression(df, "BIPOLAR");
-        assert!(Result::is_ok(&result))
+        let result = response.unwrap();
+        
+        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Max Iterations: {}", result.iterations);
+        println!("Threshold {}", result.threshold);
+        println!("Accuracy {}", result.accuracy);
+        println!("Precision {}", result.precision);
+        println!("Recall {}", result.recall);
     }
 }

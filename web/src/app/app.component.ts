@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
 
-import * as PlotlyJS from 'plotly.js-dist-min';
+import PlotlyJS from 'plotly.js-dist-min';
 import { PlotlyModule } from 'angular-plotly.js';
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +11,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, PlotlyModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

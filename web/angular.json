@@ -54,6 +54,7 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "preserveSymlinks": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
