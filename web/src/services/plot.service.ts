@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 import { map, Observable } from 'rxjs';
 import { PlotlyGraph } from '../models/responses';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 const baseUrl = environment.api.base;
 
@@ -15,9 +15,9 @@ export class PlotService {
 
   constructor() { }
 
-  public getPlot(endpoint: string): Observable<PlotlyGraph> {
+  public getPlot(endpoint: string, params?: HttpParams | undefined): Observable<PlotlyGraph> {
       // TODO: Add query params.
-      return this.http.get<PlotlyGraph>(`${baseUrl}/${endpoint}`).pipe(
+      return this.http.get<PlotlyGraph>(`${baseUrl}/${endpoint}`, { params }).pipe(
       map((res) => JSON.stringify(res)),
       map((res) => JSON.parse(res)),
       map((graph) => {

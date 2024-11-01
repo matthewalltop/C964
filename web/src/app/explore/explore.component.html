@@ -2,10 +2,12 @@
   <app-explore-nav-bar (selectedVisualization)="onVisualizationChanged($event)"
     (selectedCategory)="onCategoryChanged($event)"></app-explore-nav-bar>
 </section>
-
-<section class="mt-2">
+<section class="my-2">
+  <!-- TODO Add some text here-->
+</section>
+<section class="mt-4">
   <ng-container *ngIf="selectedVisualization$ | async as visualization">
-    <div class="block">
+    <div class="container">
       @if(visualization === 'Visual') {
       <ng-container *ngIf="plotlyResponse$ | async as graph; else loading">
         <div class="box">

@@ -51,9 +51,14 @@ pub fn plot_by_adhd_type_by_age_group() -> Result<String, Box<dyn Error>> {
 }
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
-pub fn plot_by_adhd_type_by_gender() -> Result<String, Box<dyn Error>> {
+pub fn plot_by_adhd_type_by_gender(gender: Option<Gender>) -> Result<String, Box<dyn Error>> {
+    let filter = match  gender {
+        Some(g) => col("Gender").eq(lit(g.to_string())),
+        None => lit(true)
+    };
+    
     let df = adhd_subtypes_with_gender_and_age()
-        .filter(col("ADHD Type").neq(lit("N/A")))
+        .filter(col("ADHD Type").neq(lit("N/A")).and(filter))
         .group_by([col("Gender"), col("Age Range"), col("ADHD Type")])
         .agg([
             col("ADHD Type").count().cast(DataType::Float64).alias("ADHD Subtypes")

@@ -131,6 +131,10 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split
     Ok(MLAlgorithmResponse::new(cf_matrix, None, None))
 }
 
+pub  fn apply_decision_tree() -> Result<MLAlgorithmResponse,  Box<dyn std::error::Error>> {
+    unimplemented!()
+}
+
 
 pub struct MLAlgorithmResponse {
     pub raw_cf_matrix: ConfusionMatrix<&'static str>,

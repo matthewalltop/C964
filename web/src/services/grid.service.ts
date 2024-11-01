@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment.development';
 import { map, Observable, tap } from 'rxjs';
 import { TableData } from '../models/responses';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { GridOptions } from 'ag-grid-community';
 
 const baseUrl = environment.api.base;
@@ -15,8 +15,8 @@ export class GridService {
 
   constructor() { }
 
-  getTable(endpoint: string): Observable<TableData> {
-    return this.http.get(`${baseUrl}/${endpoint}`).pipe(
+  getTable(endpoint: string, params?: HttpParams | undefined): Observable<TableData> {
+    return this.http.get(`${baseUrl}/${endpoint}`, { params }).pipe(
       map((res) => JSON.stringify(res)),
       map((res) => JSON.parse(res)),
       map((table) => {

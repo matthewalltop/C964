@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { environment } from '../environments/environment.development';
@@ -12,7 +12,6 @@ const baseUrl = environment.api.base;
   providedIn: 'root'
 })
 export class DemographicService {
-  private http = inject(HttpClient);
   private gridService = inject(GridService);
   private plotService = inject(PlotService);
 
@@ -22,15 +21,6 @@ export class DemographicService {
   getDemographics(): Observable<PlotlyGraph> {
     // TODO: This is the generic graph format for everything.
     // The deserialization nonsense can be pulled out into a utility method
-    return this.http.get<PlotlyGraph>(`${baseUrl}/demographic?gender=Male`).pipe(
-      map((res) => JSON.stringify(res)),
-      map((res) => JSON.parse(res)),
-      map((graph) => {
-        return {
-          data: graph.data.map((x: any) => JSON.parse(x)),
-          layout: JSON.parse(graph.layout)
-        };
-      }),
-    );
+    return this.plotService.getPlot('demographic', new HttpParams().set("gender", "Male"));
   }
 }

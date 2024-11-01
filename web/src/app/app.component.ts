@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angul
 import PlotlyJS from 'plotly.js-dist-min';
 import { PlotlyModule } from 'angular-plotly.js';
 import { CommonModule } from '@angular/common';
+import { MarkdownComponent, MarkdownModule } from 'ngx-markdown';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
