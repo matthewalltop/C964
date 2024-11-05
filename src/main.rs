@@ -7,7 +7,6 @@ mod algo;
 mod plots;
 mod http;
 mod api;
-
 use axum::{routing::{get}, Router};
 use axum::http::{Method};
 use polars::io::SerWriter;

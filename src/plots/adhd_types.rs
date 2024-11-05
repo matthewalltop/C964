@@ -23,6 +23,7 @@ pub fn plot_by_adhd_type_by_age_group() -> Result<String, Box<dyn Error>> {
         .sort_by_exprs(vec![col("Age Range")], SortMultipleOptions::default().with_order_descending(true))
         .collect()?;
     
+    // TODO: This seems like a good place for a Scatterplot.
     let plots = BarPlot::builder()
         .data(&df)
         .group("ADHD Type")

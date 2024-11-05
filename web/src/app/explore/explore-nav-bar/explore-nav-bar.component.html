@@ -1,0 +1,45 @@
+<div class="columns">
+
+  <div class="column is-2">
+    <label for="explore-category-select" class="label has-text-white">Data Category</label>
+    <div class="select is-normal is-info">
+      <select name="explore-category-select" id="explore-category-select" (change)="changeCategory($event)">
+        <ng-container *ngFor="let opt of categories">
+          <option [value]="opt">{{categoryMapping[opt]}}</option>
+        </ng-container>
+      </select>
+    </div>
+  </div>
+
+
+  <div class="column is-2">
+    <label for="explore-category-select" class="label has-text-white">Visual Format</label>
+    <div class="select is-normal is-info">
+      <select name="explore-visualization-select" id="explore-visualization-select"
+        (change)="changeVisualization($event)">
+        <ng-container *ngFor="let opt of visualizations">
+          <option [value]="opt">{{visualizationMapping[opt]}}</option>
+        </ng-container>
+      </select>
+    </div>
+  </div>
+
+  <div class="column is-2">
+    <label for="include-control-data-radio" class="label has-text-white">Include Control Data?</label>
+    <div class="radios control">
+      <label class="radio">
+        <input type="radio" name="withcontrols" [checked]="includeControlsValue" (change)="toggleControls()" />
+        Yes
+      </label>
+      <label class="radio">
+        <input type="radio" name="withcontrols" [checked]="!includeControlsValue" (change)="toggleControls()" />
+        No
+      </label>
+    </div>
+  </div>
+
+
+  <div class="column is-6">
+    <!-- TODO: Dynamic content. -->
+  </div>
+</div>

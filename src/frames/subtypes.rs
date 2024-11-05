@@ -1,6 +1,7 @@
 ﻿use polars::prelude::{col, CategoricalOrdering, DataType, LazyFrame};
 use crate::frames::hyperaktiv::load_patient_info;
-use crate::frames::{PatientInfoSelection, PatientInfoTranslation};
+use crate::frames::{PatientInfoFilter, PatientInfoSelection, PatientInfoTranslation};
+use crate::frames::enums::AdhdSubtype;
 
 /// Returns ADHD subtypes, gender, and age ranges of patients.
 pub fn adhd_subtypes_with_gender_and_age() -> LazyFrame {
@@ -48,10 +49,8 @@ pub fn adhd_subtypes_male() -> LazyFrame {
 /// Returns all patients who have ADHD-PH
 pub fn patient_info_has_adhd_hyperactive() -> LazyFrame {
     load_patient_info(false)
-        .filter(
-            col("ADHD").eq(1).and(col("ADD").eq(0))
-        )
-                .with_age_range_translation()
+        .with_adhd(Some(AdhdSubtype::PrimaryHyperactive))
+        .with_age_range_translation()
         .with_adhd_type_translation()
         .with_gender_translation()
         .select_default_patient_info_columns()
@@ -62,10 +61,8 @@ pub fn patient_info_has_adhd_hyperactive() -> LazyFrame {
 /// inattentive traits being present. It does not account for PI or C, specifically. 
 pub fn patient_info_has_adhd_inattentive() -> LazyFrame {
     load_patient_info(false)
-        .filter(
-            col("ADHD").eq(1).and(col("ADD").eq(1))
-        )
-                .with_age_range_translation()
+        .with_adhd(Some(AdhdSubtype::PrimaryInattentive))
+        .with_age_range_translation()
         .with_adhd_type_translation()
         .with_gender_translation()
         .select_default_patient_info_columns()

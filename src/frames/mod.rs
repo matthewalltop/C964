@@ -1,7 +1,7 @@
 ﻿use std::ops::Deref;
 use std::str::FromStr;
 use polars::prelude::{col, lit, when, Expr, LazyFrame};
-use crate::frames::enums::{Age, Gender, MentalHealthCondition};
+use crate::frames::enums::{AdhdSubtype, Age, Gender, MentalHealthCondition};
 use crate::frames::hyperaktiv::load_patient_info;
 
 /// This module exposes the raw hyperaktiv dataset
@@ -39,7 +39,7 @@ pub mod enums {
     pub enum Gender {
         Female = 0,
         Male = 1,
-        None = 2 // This is breaking convention because the data set cleanly aligns with '0' = Female & '1' = Male.
+        None = 2, // This is breaking convention because the data set cleanly aligns with '0' = Female & '1' = Male.
     }
     impl fmt::Display for Gender {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -63,7 +63,7 @@ pub mod enums {
     pub enum AdhdSubtype {
         None = 0,
         PrimaryHyperactive = 1,
-        PrimaryInattentive = 2
+        PrimaryInattentive = 2,
     }
     impl fmt::Display for AdhdSubtype {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -149,17 +149,16 @@ pub mod enums {
 }
 
 
-
-
-
-
 pub trait PatientInfoTranslation {
     fn with_age_range_translation(&mut self) -> Self;
     fn with_adhd_type_translation(&mut self) -> Self;
     fn with_gender_translation(&mut self) -> Self;
+    fn with_mental_health_translation(&mut self) -> Self;
 }
 
 pub trait PatientInfoFilter {
+    fn with_adhd(&mut self, adhd_subtype: Option<AdhdSubtype>) -> Self;
+    fn with_gender(&mut self, gender: Option<Gender>) -> Self;
     fn with_presence_of_mental_health_condition(&mut self) -> Self;
     fn with_absence_of_mental_health_condition(&mut self) -> Self;
     fn with_presence_of_given_mental_health_condition(&mut self, mental_health_condition: MentalHealthCondition) -> Self;
@@ -171,9 +170,6 @@ pub trait PatientInfoSelection {
 }
 
 impl PatientInfoTranslation for LazyFrame {
-    // TODO: Not super happy about cloning here, see the actual implementation for ideas on a potentially better way to do this.
-    // Note that a lot of the mechanisms that would make this easier are internal to the LazyFrame - so this may end up being the best path anyway.
-    // https://github.com/pola-rs/polars/blob/main/crates/polars-lazy/src/frame/mod.rs
     fn with_age_range_translation(&mut self) -> Self {
         self.deref().clone().with_column(
             when(
@@ -219,10 +215,56 @@ impl PatientInfoTranslation for LazyFrame {
                 .alias("Gender")
         )
     }
+
+    fn with_mental_health_translation(&mut self) -> Self {
+        self.deref().clone().with_column(
+            when(
+                col("BIPOLAR").eq(1)
+            ).then(
+                lit("Bipolar Disorder")
+            ).when(
+                col("UNIPOLAR").eq(1)
+            ).then(
+                lit("Unipolar Depression")
+            ).when(
+                col("ANXIETY").eq(1)
+            ).then(
+                lit("Anxiety Disorder")
+            ).when(
+                col("SUBSTANCE").eq(1)
+            ).then(
+                lit("Substance Abuse Disorder")
+            ).when(
+                col("OTHER").eq(1)
+            ).then(
+                lit("Other Condition")
+            ).otherwise(lit("N/A"))
+                .alias("Mental Health Condition")
+        )
+    }
 }
 
 impl PatientInfoFilter for LazyFrame {
-    
+    fn with_adhd(&mut self, adhd_subtype: Option<AdhdSubtype>) -> Self {
+        let fltr: Expr = match adhd_subtype {
+            Some(AdhdSubtype::PrimaryHyperactive) => col("ADHD").eq(1).and(col("ADD").eq(0)),
+            Some(AdhdSubtype::PrimaryInattentive) => col("ADHD").eq(1).and(col("ADD").eq(1)),
+            _ => col("ADHD").eq(1).or(col("ADD").eq(1))
+        };
+
+        self.deref().clone().filter(fltr)
+    }
+
+    fn with_gender(&mut self, gender: Option<Gender>) -> Self {
+        let fltr: Expr = match gender {
+            Some(Gender::Female) => col("SEX").eq(0),
+            Some(Gender::Male) => col("SEX").eq(1),
+            _ => col("ADHD").eq(1).or(col("ADD").eq(1))
+        };
+
+        self.deref().clone().filter(fltr)
+    }
+
     fn with_presence_of_mental_health_condition(&mut self) -> Self {
         self.deref().clone().filter(
             col("BIPOLAR")
@@ -246,7 +288,6 @@ impl PatientInfoFilter for LazyFrame {
     }
 
     fn with_presence_of_given_mental_health_condition(&mut self, mental_health_condition: MentalHealthCondition) -> Self {
-        
         let condition = match mental_health_condition {
             MentalHealthCondition::None => Some(""),
             MentalHealthCondition::BipolarDisorder => Some("BIPOLAR"),
@@ -258,7 +299,7 @@ impl PatientInfoFilter for LazyFrame {
         };
 
         let mhc = condition.unwrap();
-        
+
         self.deref().clone()
             .filter(col(mhc).eq(1))
     }
@@ -316,7 +357,6 @@ mod test {
     fn gender_to_strings() {
         assert_eq!(Gender::Female.to_string(), "Female");
         assert_eq!(Gender::Male.to_string(), "Male");
-
     }
 
     #[test]
@@ -341,7 +381,6 @@ mod test {
     fn subtype_to_strings() {
         assert_eq!(AdhdSubtype::PrimaryHyperactive.to_string(), "PrimaryHyperactive");
         assert_eq!(AdhdSubtype::PrimaryInattentive.to_string(), "PrimaryInattentive");
-
     }
 
     #[test]

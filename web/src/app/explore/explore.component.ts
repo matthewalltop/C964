@@ -7,7 +7,8 @@ import { GridService } from '../../services/grid.service';
 import { GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community';
 import { Observable, BehaviorSubject, map } from 'rxjs';
 import { PlotlyGraph, TableData } from '../../models/responses';
-import { ExploreNavBarComponent } from '../shared/explore-nav-bar/explore-nav-bar.component';
+import { ExploreNavBarComponent } from './explore-nav-bar/explore-nav-bar.component';
+import { ExploreDataCategory, ExploreDataCategoryMapping, VisualizationOptions } from '../../models/requests';
 
 @Component({
   selector: 'app-explore',
@@ -22,17 +23,20 @@ export class ExploreComponent {
   private demographicService = inject(DemographicService);
   private tableService = inject(GridService);
 
+  /* For dropdown values & selection changes */
+  public selectedVisualization$: BehaviorSubject<string> = new BehaviorSubject<string>('Graph');
+  public selectedCategory$: BehaviorSubject<string> = new BehaviorSubject<string>('ADHD Subtypes');
+
   // TODO: Pull these out into services & abstract the template into re-usable components.
   public plotlyResponse$: Observable<PlotlyGraph> | undefined;
   public tableResponse$: Observable<TableData> | undefined;
 
-  public rowData$: BehaviorSubject<any[] | null> = new BehaviorSubject<any[] | null>(null);
-
+  /** Necessary for Ag-Grid */
   public gridApi: GridApi | undefined;
   public gridOptions$: Observable<GridOptions> | undefined;
+  public rowData$: BehaviorSubject<any[] | null> = new BehaviorSubject<any[] | null>(null);
 
-  public selectedVisualization$: BehaviorSubject<string> = new BehaviorSubject<string>('Visual');
-  public selectedCategory$: BehaviorSubject<string> = new BehaviorSubject<string>('ADHD Subtypes');
+
 
   ngOnInit() {
     this.plotlyResponse$ = this.demographicService.getDemographics();
@@ -96,10 +100,15 @@ export class ExploreComponent {
   }
 
   onCategoryChanged(category: string) {
-    this.selectedCategory$.next(category);
+    const categoryEnum = ExploreDataCategory[category as keyof typeof ExploreDataCategory];
+    this.selectedCategory$.next(ExploreDataCategoryMapping[categoryEnum]);
   }
 
   onVisualizationChanged(visualization: string) {
-    this.selectedVisualization$.next(visualization);
+    if (VisualizationOptions.Graph === visualization) {
+      this.selectedVisualization$.next('Graph');
+    } else {
+      this.selectedVisualization$.next('Table');
+    }
   }
 }

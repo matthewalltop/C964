@@ -1,11 +1,30 @@
-﻿use polars::prelude::{col};
+﻿use polars::prelude::{col, lit, when};
 use crate::algo::{apply_logistic_regression, MLAlgorithmResponse};
-use crate::frames::{get_all_patient_info_raw};
+use crate::frames::{get_all_patient_info_raw, PatientInfoTranslation};
 
 
-pub fn comorbidity_of_mental_health_condition() {
-    // TODO: This one will need to be trained differently as it needs to evaluate ALL mental health.
-    unimplemented!()
+pub fn comorbidity_of_mental_health_condition() -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
+    let df = get_all_patient_info_raw(true)
+        .with_mental_health_translation()
+        .with_column(
+            when(
+                col("Mental Health Condition").neq(lit("N/A"))
+            ).then(
+                lit(1)
+            ).otherwise(lit(0))
+                .alias("Presence")
+        )
+        .select([
+            col("ADHD"),
+            col("ADD"),
+            col("Presence"),
+        ])
+
+        .collect()?;
+    
+    let response = apply_logistic_regression(df, vec!["ADHD", "ADD"], 0.50)?;
+    
+    Ok(response)
 }
 
 /// Experiment to determine comorbidity of bipolar disorder among patient population.
@@ -72,6 +91,18 @@ pub fn comorbidity_of_substance_abuse_disorder() -> Result<MLAlgorithmResponse, 
 #[cfg(test)]
 mod test {
     use super::*;
+    
+    #[test]
+    fn trains_model_for_comorbidity_of_mental_health_condition() {
+        let result = comorbidity_of_mental_health_condition().unwrap();
+        println!("Comorbidity of Mental Health Conditions");
+        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Accuracy {}", result.accuracy);
+        println!("Precision {}", result.precision);
+        println!("Recall {}\n", result.recall);
+
+        assert_eq!(true, true)
+    }
     
     #[test]
     fn trains_model_for_comorbidity_of_bipolar_disorder() {

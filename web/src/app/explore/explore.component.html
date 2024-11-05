@@ -8,7 +8,7 @@
 <section class="mt-4">
   <ng-container *ngIf="selectedVisualization$ | async as visualization">
     <div class="container">
-      @if(visualization === 'Visual') {
+      @if(visualization === 'Graph') {
       <ng-container *ngIf="plotlyResponse$ | async as graph; else loading">
         <div class="box">
           <plotly-plot [layout]="graph.layout" [data]="graph.data"></plotly-plot>
