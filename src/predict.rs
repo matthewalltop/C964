@@ -1,7 +1,7 @@
 ﻿use polars::prelude::{col, lit, when};
 use crate::algo::{apply_logistic_regression, MLAlgorithmResponse};
-use crate::frames::{get_all_patient_info_raw, PatientInfoTranslation};
-
+use crate::frames::{get_all_patient_info_raw};
+use crate::traits::PatientInfoTranslation;
 
 pub fn comorbidity_of_mental_health_condition() -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
     let df = get_all_patient_info_raw(true)
@@ -19,11 +19,10 @@ pub fn comorbidity_of_mental_health_condition() -> Result<MLAlgorithmResponse, B
             col("ADD"),
             col("Presence"),
         ])
-
         .collect()?;
-    
+
     let response = apply_logistic_regression(df, vec!["ADHD", "ADD"], 0.50)?;
-    
+
     Ok(response)
 }
 
@@ -38,8 +37,8 @@ pub fn comorbidity_of_bipolar_disorder() -> Result<MLAlgorithmResponse, Box<dyn 
         ])
         .collect()?;
 
-    let response = apply_logistic_regression(df, vec!["ADHD", "ADD"], 0.70)?;    
-    
+    let response = apply_logistic_regression(df, vec!["ADHD", "ADD"], 0.70)?;
+
     Ok(response)
 }
 
@@ -91,7 +90,7 @@ pub fn comorbidity_of_substance_abuse_disorder() -> Result<MLAlgorithmResponse, 
 #[cfg(test)]
 mod test {
     use super::*;
-    
+
     #[test]
     fn trains_model_for_comorbidity_of_mental_health_condition() {
         let result = comorbidity_of_mental_health_condition().unwrap();
@@ -103,7 +102,7 @@ mod test {
 
         assert_eq!(true, true)
     }
-    
+
     #[test]
     fn trains_model_for_comorbidity_of_bipolar_disorder() {
         let result = comorbidity_of_bipolar_disorder().unwrap();
@@ -112,7 +111,7 @@ mod test {
         println!("Accuracy {}", result.accuracy);
         println!("Precision {}", result.precision);
         println!("Recall {}\n", result.recall);
- 
+
         assert_eq!(true, true)
     }
 

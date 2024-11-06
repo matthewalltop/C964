@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SubtypeService } from './subtype.service';
+import { MentalHealthService } from './mental-health.service';
 
-describe('SubtypeService', () => {
-  let service: SubtypeService;
+describe('MentalHealthService', () => {
+  let service: MentalHealthService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SubtypeService);
+    service = TestBed.inject(MentalHealthService);
   });
 
   it('should be created', () => {

@@ -2,13 +2,17 @@
 use std::error;
 use plotlars::{Axis, BarPlot, Plot, Text};
 use polars::prelude::{col, lit, DataType, SortMultipleOptions};
-use crate::frames::enums::{Age, Gender};
-use crate::frames::subtypes::adhd_subtypes_with_gender_and_age;
+use crate::enums::{Age, Gender};
+use crate::frames::{get_all_patient_info_raw};
 use crate::http::responses::PlotlyGraph;
+use crate::traits::PatientInfoTranslation;
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
-pub fn plot_by_adhd_type_by_age_group() -> Result<String, Box<dyn Error>> {
-    let df = adhd_subtypes_with_gender_and_age()
+pub fn plot_adhd_type_by_age_group(with_controls: bool) -> Result<String, Box<dyn Error>> {
+    let df = get_all_patient_info_raw(with_controls)
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .with_age_range_translation()
         .filter(col("ADHD Type").neq(lit("N/A")))
         .group_by([col("Gender"), col("Age Range"), col("ADHD Type")])
         .agg([
@@ -23,7 +27,7 @@ pub fn plot_by_adhd_type_by_age_group() -> Result<String, Box<dyn Error>> {
         .sort_by_exprs(vec![col("Age Range")], SortMultipleOptions::default().with_order_descending(true))
         .collect()?;
     
-    // TODO: This seems like a good place for a Scatterplot.
+    // TODO: This seems like a good place for a different kind of visualization.
     let plots = BarPlot::builder()
         .data(&df)
         .group("ADHD Type")
@@ -52,13 +56,16 @@ pub fn plot_by_adhd_type_by_age_group() -> Result<String, Box<dyn Error>> {
 }
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
-pub fn plot_by_adhd_type_by_gender(gender: Option<Gender>) -> Result<String, Box<dyn Error>> {
+pub fn plot_adhd_type_by_gender(gender: Option<Gender>, with_controls: bool) -> Result<String, Box<dyn Error>> {
     let filter = match  gender {
         Some(g) => col("Gender").eq(lit(g.to_string())),
         None => lit(true)
     };
     
-    let df = adhd_subtypes_with_gender_and_age()
+    let df = get_all_patient_info_raw(with_controls)
+        .with_adhd_type_translation()
+        .with_gender_translation()
+        .with_age_range_translation()
         .filter(col("ADHD Type").neq(lit("N/A")).and(filter))
         .group_by([col("Gender"), col("Age Range"), col("ADHD Type")])
         .agg([

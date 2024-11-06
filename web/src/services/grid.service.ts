@@ -65,30 +65,3 @@ export class GridService {
       }));
   }
 }
-
-
-
-
-
-
-  // ngOnInit() {
-
-  //       const rows = res.columns
-  //         .map((column) => [column.name.replace(' ', '_').toLocaleLowerCase(), column.values]);
-
-  //       let rowData = [];
-  //       // Create an object with the column name as the key and the values at the current index as the value.
-  //       // When all column names are added, push the object to the rowData array.
-  //       for (let i = 0; i < rows[0][1].length; i++) {
-  //         const row: any = {};
-  //         rows.forEach(([key, values]) => {
-  //           row[key as string] = values[i];
-  //         });
-  //         rowData.push(row);
-  //       }
-
-  //       this.rowData$.next(rowData);
-
-  //       return options;
-  //     }));
-  // }

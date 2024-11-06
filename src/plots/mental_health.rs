@@ -1,7 +1,8 @@
 ﻿use std::error::Error;
 use plotlars::{Plot, HeatMap };
 use polars::prelude::{col, Expr};
-use crate::frames::{get_all_patient_info_raw, PatientInfoFilter, PatientInfoSelection, PatientInfoTranslation};
+use crate::frames::{get_all_patient_info_raw};
+use crate::traits::{PatientInfoFilter, PatientInfoTranslation};
 
 pub fn plot_comorbid_mental_health_conditions() -> Result<String, Box<dyn Error>> {
     let df = get_all_patient_info_raw(false)
@@ -20,8 +21,8 @@ pub fn plot_comorbid_mental_health_conditions() -> Result<String, Box<dyn Error>
         
         .collect()?;
     
-    
-    println!("{}", df);
+    // DEBUG
+    // println!("{}", df);
             
     HeatMap::builder()
         .data(&df)

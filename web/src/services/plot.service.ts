@@ -15,8 +15,7 @@ export class PlotService {
 
   constructor() { }
 
-  public getPlot(endpoint: string, params?: HttpParams | undefined): Observable<PlotlyGraph> {
-      // TODO: Add query params.
+  public getBarPlot(endpoint: string, params?: HttpParams | undefined): Observable<PlotlyGraph> {
       return this.http.get<PlotlyGraph>(`${baseUrl}/${endpoint}`, { params }).pipe(
       map((res) => JSON.stringify(res)),
       map((res) => JSON.parse(res)),

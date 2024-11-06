@@ -3,7 +3,7 @@ use linfa_bayes::GaussianNb;
 use linfa_logistic::LogisticRegression;
 use ndarray::{s, ArrayBase, Dim, OwnedRepr};
 use polars::frame::DataFrame;
-use polars::prelude::{col, Float64Type, IndexOrder};
+use polars::prelude::{Float64Type, IndexOrder};
 
 
 /// Applies logistic regression to the provided dataset
@@ -23,7 +23,7 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
         .map_targets(|x| if *x as u32 == 1 { "Positive" } else { "Negative" })
         .with_feature_names(feature_names)
         .split_with_ratio(split_ratio);
-    
+
     // Internal closure method to generate a confusion matrix.
     // Each of these algorithms operates differently and this is specific to Logistic Regression, only.
     let create_cf_matrix = |
@@ -52,22 +52,22 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
 
         confusion_matrix
     };
-    
-    
+
+
     // Establish variables for determining the most accurate combination of settings for the model.
     // Set the initial matrix to a threshold of 0.01 with max iterations of 100.
     let mut best_cf_matrix = create_cf_matrix(&train, &test, 0.01, 100);
     let mut best_iterations: u64 = 0;
     let mut best_threshold: f64 = 0.0;
     let mut curr_threshold: f64 = 0.02;
-    
+
     // Increase the number of iterations & the threshold value within given bounds.
     // This will repeatedly predict the desired result and return the combination of settings that are most accurate.
     for max_iterations in (1000..5000).step_by(500) {
         while curr_threshold < 1.0 {
             // Create a new confusion matrix with incremented settings.
             let confusion_matrix = create_cf_matrix(&train, &test, curr_threshold, max_iterations);
-            
+
             // If we've done better than previous runs, track those settings.
             if confusion_matrix.accuracy() > best_cf_matrix.accuracy() {
                 best_cf_matrix = confusion_matrix;
@@ -79,7 +79,7 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
         // Reset the threshold for the next run.
         curr_threshold = 0.02;
     }
-    
+
     Ok(MLAlgorithmResponse::new(best_cf_matrix, Some(best_threshold), Some(best_iterations)))
 }
 
@@ -101,7 +101,7 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split
         .map_targets(|x| if *x as u32 == 1 { "Positive" } else { "Negative" })
         .with_feature_names(feature_names)
         .split_with_ratio(split_ratio);
-    
+
     let create_cf_matrix = |
         train: &DatasetBase<
             ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
@@ -126,13 +126,9 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split
         confusion_matrix
     };
 
-    
+
     let cf_matrix = create_cf_matrix(&train, &test);
     Ok(MLAlgorithmResponse::new(cf_matrix, None, None))
-}
-
-pub  fn apply_decision_tree() -> Result<MLAlgorithmResponse,  Box<dyn std::error::Error>> {
-    unimplemented!()
 }
 
 
@@ -189,7 +185,7 @@ mod test {
 
         let response = apply_logistic_regression(df, vec!["ADHD", "ADD"], 0.70);
         assert!(Result::is_ok(&response));
-        
+
         let result = response.unwrap();
         println!("Logistic Regression Algorithm");
         println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
@@ -223,6 +219,6 @@ mod test {
         println!("Precision {}", result.precision);
         println!("Recall {}", result.recall);
     }
-    
-    
+
+
 }

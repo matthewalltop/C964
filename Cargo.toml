@@ -6,8 +6,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-plotlars = "0.6.0"
+axum = "0.7.7"
 hashbrown = { version = "0.15.0", features = ["rayon", "serde"] }
+linfa = { version = "0.7.0"}
+linfa-bayes = "0.7.0"
+linfa-logistic = "0.7.0"
+# linfa uses this version of ndarray.
+ndarray = { version = "0.15", features = ["approx"] }
+ndarray-stats = "0.5.0"
+plotlars = "0.6.0"
 polars = { version = "0.43.1", features = [
     "lazy",
     "json",
@@ -18,25 +25,9 @@ polars = { version = "0.43.1", features = [
     "ndarray",
     "dtype-categorical"
 ] }
-
-# linfa uses this version
-ndarray = { version = "0.15", features = ["approx"] }
-ndarray-stats = "0.5.0"
-linfa = { version = "0.7.0"} # features = ["openblas-system"]
-linfa-bayes = "0.7.0"
-linfa-logistic = "0.7.0"
 serde = "1.0.213"
-# warp = "0.3"
-tokio = { version = "1.41.0", features = ["rt", "macros", "rt-multi-thread"] }
-axum = "0.7.7"
-tracing-subscriber = "0.3.18"
 serde_json = "1.0.128"
-tower-http = { version = "0.6.1", features = ["cors"] }
+tokio = { version = "1.41.0", features = ["rt", "macros", "rt-multi-thread"] }
 tower = "0.5.1"
-#linfa-elasticnet = "0.6.1"
-#linfa-trees = "0.6.1"
-#linfa-svm = "0.6.1"
-#linfa-ica = "0.6.1"
-#linfa-pls = "0.6.1"
-#linfa-preprocessing = "0.6.1"
-#linfa-nn = "0.6.1"
+tower-http = { version = "0.6.1", features = ["cors"] }
+tracing-subscriber = "0.3.18"

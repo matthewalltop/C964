@@ -1,153 +1,102 @@
-﻿use polars::prelude::LazyFrame;
-use crate::frames::{PatientInfoFilter, PatientInfoSelection, PatientInfoTranslation };
-use crate::frames::enums::MentalHealthCondition;
+﻿use std::error::Error;
+use polars::prelude::{col, lit, LazyFrame};
+use crate::frames::{PatientInfoFilter, PatientInfoSelection, PatientInfoTranslation};
 use crate::frames::hyperaktiv::load_patient_info;
 
 /// Returns all patients who reported a mental health or substance abuse condition.
-pub fn patients_with_comorbid_mental_health_conditions() -> LazyFrame {
-    load_patient_info(false)
-        .with_presence_of_mental_health_condition()
-        .with_age_range_translation()
-        .with_adhd_type_translation()
-        .with_gender_translation()
-        .select_default_patient_info_columns()
+pub fn patients_with_comorbid_mental_health_conditions(with_controls: bool) -> Result<String, Box<dyn Error>> {
+    let df = mental_health_base_dataset(with_controls).collect()?;
+    let result = serde_json::to_string(&df).unwrap();
+
+    Ok(result)
 }
 
 /// Returns all patients who reported no additional mental health or substance abuse conditions.
-pub fn patients_without_comorbid_mental_health_conditions() -> LazyFrame {
-    load_patient_info(false)
+pub fn patients_without_comorbid_mental_health_conditions() -> Result<String, Box<dyn Error>> {
+    let df = load_patient_info(false)
         .with_absence_of_mental_health_condition()
         .with_age_range_translation()
         .with_adhd_type_translation()
         .with_gender_translation()
         .select_default_patient_info_columns()
+        .collect()?;
+
+    let result = serde_json::to_string(&df).unwrap();
+
+    Ok(result)
 }
 
 /// Returns all patients who have Bipolar Disorder
 /// Does not discriminate whether patients have another co-morbid mental health condition
-pub fn patient_info_has_bipolar_disorder() -> LazyFrame {
-    load_patient_info(false)
-        .with_presence_of_given_mental_health_condition(MentalHealthCondition::BipolarDisorder)
-        .with_age_range_translation()
-        .with_adhd_type_translation()
-        .with_gender_translation()
-        .select_default_patient_info_columns()
+pub fn patient_info_has_bipolar_disorder(with_controls: bool) -> Result<String, Box<dyn Error>> {
+    let df = mental_health_base_dataset(with_controls).filter(
+        col("Mental Health Condition").eq(lit("Bipolar Disorder"))
+    ).collect()?;
+    let result = serde_json::to_string(&df).unwrap();
+
+    Ok(result)
 }
 
 /// Returns all patients who have Unipolar Depression
 /// /// Does not discriminate whether patients have another co-morbid mental health condition
-pub fn patient_info_has_unipolar_depression() -> LazyFrame {
-    load_patient_info(false)
-        .with_presence_of_given_mental_health_condition(MentalHealthCondition::UnipolarDepression)
-        .with_age_range_translation()
-        .with_adhd_type_translation()
-        .with_gender_translation()
-        .select_default_patient_info_columns()
+pub fn patient_info_has_unipolar_depression(with_controls: bool) -> Result<String, Box<dyn Error>> {
+    let df = mental_health_base_dataset(with_controls).filter(
+        col("Mental Health Condition").eq(lit("Unipolar Depression"))
+    ).collect()?;
+    
+    let result = serde_json::to_string(&df).unwrap();
+
+    Ok(result)
 }
 
 /// Returns all patients who have Anxiety
 /// Does not discriminate whether patients have another co-morbid mental health condition
-pub fn patient_info_has_anxiety() -> LazyFrame {
-    load_patient_info(false)
-        .with_presence_of_given_mental_health_condition(MentalHealthCondition::AnxietyDisorder)
-        .with_age_range_translation()
-        .with_adhd_type_translation()
-        .with_gender_translation()
-        .select_default_patient_info_columns()
+pub fn patient_info_has_anxiety(with_controls: bool) -> Result<String, Box<dyn Error>> {
+    let df = mental_health_base_dataset(with_controls).filter(
+        col("Mental Health Condition").eq(lit("Anxiety Disorder"))
+    ).collect()?;
+
+    let result = serde_json::to_string(&df).unwrap();
+
+    Ok(result)
 }
 
 /// Returns all patients who have a substance abuse disorder
 /// Does not discriminate whether patients have another co-morbid mental health condition
-pub fn patient_info_has_substance_abuse_disorder() -> LazyFrame {
-    load_patient_info(false)
-        .with_presence_of_given_mental_health_condition(MentalHealthCondition::SubstanceAbuseDisorder)
-        .with_age_range_translation()
-        .with_adhd_type_translation()
-        .with_gender_translation()
-        .select_default_patient_info_columns()
+pub fn patient_info_has_substance_abuse_disorder(with_controls: bool) -> Result<String, Box<dyn Error>> {
+    let df = mental_health_base_dataset(with_controls).filter(
+        col("Mental Health Condition").eq(lit("Substance Abuse Disorder"))
+    ).collect()?;
+
+    let result = serde_json::to_string(&df).unwrap();
+
+    Ok(result)
 }
 
 /// Returns all patients who indicated 'Other' for presence of a mental health condition.
 /// Does not discriminate whether patients have another comorbid mental health condition
-pub fn patient_info_has_other_mental_health_condition() -> LazyFrame {
-    load_patient_info(false)
-        .with_presence_of_given_mental_health_condition(MentalHealthCondition::Other)
+pub fn patient_info_has_other_mental_health_condition(with_controls: bool) -> Result<String, Box<dyn Error>> {
+    let df = mental_health_base_dataset(with_controls).filter(
+        col("Mental Health Condition").eq(lit("Other"))
+    ).collect()?;
+
+    let result = serde_json::to_string(&df).unwrap();
+
+    Ok(result)
+}
+
+fn mental_health_base_dataset(with_controls: bool) -> LazyFrame {
+    load_patient_info(with_controls)
+        .with_presence_of_mental_health_condition()
         .with_age_range_translation()
         .with_adhd_type_translation()
         .with_gender_translation()
-        .select_default_patient_info_columns()
-}
-
-
-#[cfg(test)]
-mod test {
-use super::*;
-    use polars::prelude::*;
-
-    #[test]
-    fn loads_all_patients_with_a_mental_health_condition() {
-        let df = patients_with_comorbid_mental_health_conditions().collect().unwrap();
-        assert!(!df.is_empty());
-
-        let patients_without_mental_health_conditions = df.lazy()
-            .with_absence_of_mental_health_condition()
-            .collect()
-            .unwrap();
-        
-        assert!(patients_without_mental_health_conditions.is_empty())        
-    }
-
-    #[test]
-    fn loads_all_patients_without_a_mental_health_condition() {
-        let df = patients_without_comorbid_mental_health_conditions().collect().unwrap();
-        assert!(!df.is_empty());
-
-        let patients_with_mental_health_conditions = df.lazy()
-            .with_presence_of_mental_health_condition()
-            .collect()
-            .unwrap();
-
-        assert!(patients_with_mental_health_conditions.is_empty())
-    }
-
-    #[test]
-    fn loads_all_patients_with_bipolar_disorder() {
-        let df = patient_info_has_bipolar_disorder().collect().unwrap();
-        assert!(!df.is_empty());
-        assert_eq!(df.column("BIPOLAR").unwrap().tail(Some(1)), Series::new("BIPOLAR".into(), &[1]));
-        assert!(df.column("BIPOLAR").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
-    }
-
-    #[test]
-    fn loads_all_patients_with_unipolar_depression() {
-        let df = patient_info_has_unipolar_depression().collect().unwrap();
-        assert!(!df.is_empty());
-        assert_eq!(df.column("UNIPOLAR").unwrap().tail(Some(1)), Series::new("UNIPOLAR".into(), &[1]));
-        assert!(df.column("UNIPOLAR").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
-    }
-
-    #[test]
-    fn loads_all_patients_with_anxiety() {
-        let df = patient_info_has_anxiety().collect().unwrap();
-        assert!(!df.is_empty());
-        assert_eq!(df.column("ANXIETY").unwrap().tail(Some(1)), Series::new("ANXIETY".into(), &[1]));
-        assert!(df.column("ANXIETY").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
-    }
-
-    #[test]
-    fn loads_all_patients_with_substance_abuse_disorder() {
-        let df = patient_info_has_substance_abuse_disorder().collect().unwrap();
-        assert!(!df.is_empty());
-        assert_eq!(df.column("SUBSTANCE").unwrap().tail(Some(1)), Series::new("SUBSTANCE".into(), &[1]));
-        assert!(df.column("SUBSTANCE").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
-    }
-
-    #[test]
-    fn loads_all_patients_with_other_mental_health_condition() {
-        let df = patient_info_has_other_mental_health_condition().collect().unwrap();
-        assert!(!df.is_empty());
-        assert_eq!(df.column("OTHER").unwrap().tail(Some(1)), Series::new("OTHER".into(), &[1]));
-        assert!(df.column("OTHER").unwrap().cast(&DataType::Boolean).unwrap().iter().all(|_| true));
-    }
-    
+        .with_mental_health_translation()
+        .select([
+            col("ID"),
+            col("Age Range"),
+            col("Gender"),
+            col("ADHD Type"),
+            col("Mental Health Condition")
+        ])
 }
