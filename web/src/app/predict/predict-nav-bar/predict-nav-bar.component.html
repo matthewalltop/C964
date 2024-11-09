@@ -1,33 +1,72 @@
 <div class="columns">
 
+
+  <!--
+        public adhdTypeCategory$ = new BehaviorSubject<string>("All"); -->
+
   <div class="column is-2">
-    <!-- <label for="explore-category-select" class="label has-text-white">Data Category</label>
+    <label for="predict-comorbidity-select" class="label has-text-white">Comorbidity</label>
     <div class="select is-normal is-info">
-      <select name="explore-category-select" id="explore-category-select" (change)="changeCategory($event)">
-        <option value="" disabled selected hidden>Choose category</option>
-        <ng-container *ngFor="let opt of visualizationCategories">
-          <option value="{{opt}}">{{opt}}</option>
+      <select name="comorbidity-select" id="comorbidity-select" (change)="changeComorbidity($event)">
+        <ng-container *ngFor="let opt of comorbidityCategories">
+          <option [value]="opt">{{comorbidityCategoryMapping[opt]}}</option>
         </ng-container>
       </select>
-    </div> -->
+    </div>
+  </div>
+
+  <div class="column is-2">
+    <label for="predict-gender-select" class="label has-text-white">Gender</label>
+    <div class="select is-normal is-info">
+      <select name="gender-select" id="gender-select" (change)="changeGender($event)">
+        <ng-container *ngFor="let opt of genderCategories">
+          <option [value]="opt">{{genderCategoryMapping[opt]}}</option>
+        </ng-container>
+      </select>
+    </div>
   </div>
 
 
   <div class="column is-2">
-    <!-- <label for="explore-category-select" class="label has-text-white">Visual Format</label>
-      <div class="select is-normal is-info">
-        <select name="explore-visualization-select" id="explore-visualization-select"
-        (change)="changeVisualization($event)">
-        <option value="" disabled selected hidden>Choose format</option>
-        <ng-container *ngFor="let opt of visualizationOptions">
-          <option value="{{opt}}">{{opt}}</option>
+    <label for="predict-age-range-select" class="label has-text-white">Gender</label>
+    <div class="select is-multiple is-info">
+      <select multiple name="age-range-select" id="age-range-select" (change)="changeAgeRanges($event)">
+        <ng-container *ngFor="let opt of ageRangeCategories">
+          <option [value]="opt">{{ageRangeCategoryMapping[opt]}}</option>
         </ng-container>
       </select>
-      </div> -->
+    </div>
   </div>
 
-
-  <div class="column is-6">
-    <!-- TODO: Dynamic content. -->
+  <div class="column is-2">
+    <label for="predict-adhd-select" class="label has-text-white">Gender</label>
+    <div class="select is-normal is-info">
+      <select name="adhd-select" id="adhd-select" (change)="changeAdhdType($event)">
+        <ng-container *ngFor="let opt of adhdTypeCategories">
+          <option [value]="opt">{{adhdTypeCategoryMapping[opt]}}</option>
+        </ng-container>
+      </select>
+    </div>
   </div>
+
+  <div class="column is-2">
+    <label for="include-control-data-radio" class="label has-text-white">Include Control Data?</label>
+    <div class="radios control is-align-content-center py-3">
+      <label class="radio">
+        <input type="radio" name="withcontrols" [checked]="includeControlsValue" (change)="toggleControls()" />
+        Yes
+      </label>
+      <label class="radio">
+        <input type="radio" name="withcontrols" [checked]="!includeControlsValue" (change)="toggleControls()" />
+        No
+      </label>
+    </div>
+  </div>
+
+  <div class="column is-2 is-align-content-right">
+    <div class="is-align-content-center pt-5">
+      <button class="button is-success" (click)="submit($event)">Fetch Data</button>
+    </div>
+  </div>
+
 </div>

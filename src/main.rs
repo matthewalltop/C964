@@ -4,11 +4,15 @@ mod algo;
 mod api;
 mod enums;
 mod frames;
-mod http;
+mod requests;
 mod plots;
 mod predict;
 mod traits;
 
+pub(crate) type JsonResponse = Result<String, Box<dyn  Error>>;
+
+
+use std::error::Error;
 use axum::{routing::{get}, Router};
 use axum::http::{Method};
 use axum::routing::post;

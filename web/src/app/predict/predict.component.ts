@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { PredictService } from '../../services/predict.service';
 import { PredictNavBarComponent } from "./predict-nav-bar/predict-nav-bar.component";
+import { PredictRequest } from '../../models/requests';
 
 @Component({
   selector: 'app-predict',
@@ -12,5 +13,9 @@ import { PredictNavBarComponent } from "./predict-nav-bar/predict-nav-bar.compon
 })
 export class PredictComponent {
   public predictSvc = inject(PredictService);
+
+  submit(event: PredictRequest) {
+    console.log(event);
+  }
 
 }

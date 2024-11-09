@@ -1,10 +1,10 @@
-﻿run-name: Angular CI
+﻿name: Angular CI
 on:
   push:
     branches: [main]
 defaults:
   run:
-    working-directory: web
+    working-directory: ./web
 
 jobs:
   build:

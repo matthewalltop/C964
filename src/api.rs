@@ -3,7 +3,7 @@ use axum::extract::Query;
 use crate::enums::{Gender};
 use crate::frames::demographics::adhd_subtype_info;
 use crate::frames::mental_health::{patient_info_has_anxiety, patient_info_has_bipolar_disorder, patient_info_has_other_mental_health_condition, patient_info_has_substance_abuse_disorder, patient_info_has_unipolar_depression, patients_with_comorbid_mental_health_conditions};
-use crate::http::requests::{DemographicCategory, DemographicParams, DisplayType, MentalHealthCategory, MentalHealthParams, PredictParams};
+use crate::requests::{DemographicCategory, DemographicParams, DisplayType, MentalHealthCategory, MentalHealthParams, PredictParams};
 use crate::plots::demographics::{plot_adhd_type_by_age_group, plot_adhd_type_by_gender};
 
 pub async fn demographic_handler(params: Query<DemographicParams>) -> String {

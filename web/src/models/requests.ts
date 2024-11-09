@@ -36,9 +36,8 @@ export const MentalHealthCategoryMapping: Record<MentalHealthCategory, string> =
   [MentalHealthCategory.HasOther]: "Other"
 };
 
-
 export enum VisualizationOptions {
-  Graph = 'Graph', // TODO: BarChart, Scatterplot, etc.
+  Graph = 'Graph',
   Table = 'Table'
 }
 
@@ -46,6 +45,49 @@ export const VisualizationOptionsMapping: Record<VisualizationOptions, string> =
   [VisualizationOptions.Graph]: "Graph",
   [VisualizationOptions.Table]: "Table"
 }
+
+export enum Gender {
+  All = 'All',
+  Male = 'Male',
+  Female = 'Female'
+}
+
+export const GenderMapping: Record<Gender, string> = {
+  [Gender.All]: "All",
+  [Gender.Female]: "Female",
+  [Gender.Male]: "Male"
+}
+
+export enum AdhdType {
+  None = 'None',
+  ADHDPH = 'ADHD-PH',
+  ADHDPI = 'ADHD-PI',
+  All = 'All'
+}
+
+export const AdhdTypeMapping: Record<AdhdType, string> = {
+  [AdhdType.None]: "None",
+  [AdhdType.ADHDPH]: "Predominantly Hyperactive",
+  [AdhdType.ADHDPI]: "Predominantly Inattentive",
+  [AdhdType.All]: "All"
+}
+
+export enum AgeRange {
+  SeventeenToTwentyNine = '17-29',
+  ThirtyToThirtyNine = '30-39',
+  FortyToFortyNine = '40-49',
+  FiftyToSixtySeven = '50-67',
+  All = 'All',
+}
+
+export const AgeRangeMapping: Record<AgeRange, string> = {
+  [AgeRange.SeventeenToTwentyNine]: '17-29',
+  [AgeRange.ThirtyToThirtyNine]: '30-39',
+  [AgeRange.FortyToFortyNine]: '40-49',
+  [AgeRange.FiftyToSixtySeven]: '50-67',
+  [AgeRange.All]: "All",
+}
+
 
 export class DemographicsRequest {
   constructor(
@@ -62,5 +104,15 @@ export class MentalHealthRequest {
     public sub_category: string,
     public gender: string | null = null,
     public with_controls: boolean = false
+  ){}
+}
+
+export class PredictRequest {
+  constructor(
+    public condition: string,
+    public gender: string,
+    public age_ranges: string[],
+    public adhd_type: string,
+    public include_controls: boolean
   ){}
 }

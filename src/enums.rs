@@ -76,9 +76,13 @@ impl FromStr for Age {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "seventeentotwentynine" => Ok(Age::SeventeenToTwentyNine),
+            "17-29" => Ok(Age::SeventeenToTwentyNine),
             "thirtytothirtynine" => Ok(Age::ThirtyToThirtyNine),
+            "30-39" => Ok(Age::ThirtyToThirtyNine),
             "fortytofortynine" => Ok(Age::FortyToFortyNine),
+            "40-49" => Ok(Age::FortyToFortyNine),
             "fiftytosixtyseven" => Ok(Age::FiftyToSixtySeven),
+            "50-67" => Ok(Age::FiftyToSixtySeven),
             _ => Ok(Age::None)
         }
     }
@@ -107,9 +111,13 @@ impl FromStr for MentalHealthCondition {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "bipolardisorder" => Ok(MentalHealthCondition::BipolarDisorder),
+            "bipolar" => Ok(MentalHealthCondition::BipolarDisorder),
             "unipolardepression" => Ok(MentalHealthCondition::UnipolarDepression),
+            "unipolar" => Ok(MentalHealthCondition::UnipolarDepression),
             "anxietydisorder" => Ok(MentalHealthCondition::AnxietyDisorder),
+            "anxiety" => Ok(MentalHealthCondition::AnxietyDisorder),
             "substanceabusedisorder" => Ok(MentalHealthCondition::SubstanceAbuseDisorder),
+            "substance" => Ok(MentalHealthCondition::SubstanceAbuseDisorder),
             "other" => Ok(MentalHealthCondition::Other),
             _ => Ok(MentalHealthCondition::None)
         }
@@ -203,6 +211,11 @@ mod test {
         assert_eq!(Age::from_str("ThIrtyToTHirTyNINe").unwrap(), Age::ThirtyToThirtyNine);
         assert_eq!(Age::from_str("FORTYTOFORTYNINE").unwrap(), Age::FortyToFortyNine);
         assert_eq!(Age::from_str("FiftyTosiXtyseVeN").unwrap(), Age::FiftyToSixtySeven);
+
+        assert_eq!(Age::from_str("17-29").unwrap(), Age::SeventeenToTwentyNine);
+        assert_eq!(Age::from_str("30-39").unwrap(), Age::ThirtyToThirtyNine);
+        assert_eq!(Age::from_str("40-49").unwrap(), Age::FortyToFortyNine);
+        assert_eq!(Age::from_str("50-67").unwrap(), Age::FiftyToSixtySeven);
     }
 
     #[test]
@@ -232,5 +245,11 @@ mod test {
         assert_eq!(MentalHealthCondition::from_str("AnxietyDisorder").unwrap(), MentalHealthCondition::AnxietyDisorder);
         assert_eq!(MentalHealthCondition::from_str("SubstanceAbuseDisorder").unwrap(), MentalHealthCondition::SubstanceAbuseDisorder);
         assert_eq!(MentalHealthCondition::from_str("Other").unwrap(), MentalHealthCondition::Other);
+
+        assert_eq!(MentalHealthCondition::from_str("BIPOLAR").unwrap(), MentalHealthCondition::BipolarDisorder);
+        assert_eq!(MentalHealthCondition::from_str("UNIPOLAR").unwrap(), MentalHealthCondition::UnipolarDepression);
+        assert_eq!(MentalHealthCondition::from_str("ANXIETY").unwrap(), MentalHealthCondition::AnxietyDisorder);
+        assert_eq!(MentalHealthCondition::from_str("SUBSTANCE").unwrap(), MentalHealthCondition::SubstanceAbuseDisorder);
+        assert_eq!(MentalHealthCondition::from_str("OTHER").unwrap(), MentalHealthCondition::Other);
     }
 }
