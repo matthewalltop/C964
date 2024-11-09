@@ -1,10 +1,16 @@
 ﻿# Ripped from here - https://github.com/actions-rs/meta/blob/master/recipes/quickstart.md
-name: CI
+name: Cargo CI
 on:
   push:
     branches: [main]
 
+# TODO: Split apart Back & Frontend Build/Test/Deploy
+
 jobs:
+  install_angular_cli:
+    name: Install Latest Angular
+    uses: actions/angular-github-actions
+  
   cargo_build_and_test:
     name: Cargo build and test
     runs-on: ubuntu-latest
@@ -34,3 +40,4 @@ jobs:
 #        with:
 #          command: clippy
 #          args: -- -D warnings
+

@@ -23,6 +23,9 @@
             "polyfills": [
               "zone.js"
             ],
+            "allowedCommonJsDependencies": [
+              "plotly.js-dist-min"
+            ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -36,19 +39,23 @@
           },
           "configurations": {
             "production": {
+              "aot": true,
+              "extractLicenses": true,
+              "optimization": true,
+              "outputHashing": "all",
+              "preserveSymlinks": false,
+              "sourceMap": false,
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "10mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
                   "maximumError": "4kb"
                 }
-              ],
-              "outputHashing": "all"
+              ]
             },
             "development": {
               "optimization": false,
