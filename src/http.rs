@@ -1,7 +1,7 @@
 ﻿pub mod requests {
     use std::fmt;
     use std::str::FromStr;
-    use serde::{Deserialize, Deserializer, Serialize};
+    use serde::{Deserialize, Serialize};
     use serde_with::{serde_as, NoneAsEmptyString};
 
     #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -37,17 +37,6 @@
         pub(crate) with_controls: Option<bool>,
     }
 
-    impl DemographicParams {
-        pub fn default() ->  DemographicParams {
-            DemographicParams {
-                display: None,
-                sub_category: None,
-                gender: None,
-                with_controls: None,
-            }
-        }
-    }
-
     impl fmt::Display for DemographicParams {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             write!(f, "{:?}", self)
@@ -63,27 +52,9 @@
         pub(crate) with_controls: Option<bool>,
     }
 
-    impl MentalHealthParams {
-        pub fn default() -> MentalHealthParams {
-            MentalHealthParams {
-                display: None,
-                category: None,
-                with_controls: None,
-            }
-        }
-    }
-
     #[derive(Debug, Deserialize)]
     pub struct PredictParams {
         pub(crate) gender: Option<String>
-    }
-
-    impl PredictParams {
-        pub fn default() -> PredictParams {
-            PredictParams {
-                gender: None
-            }
-        }
     }
 
     #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -144,17 +115,6 @@
         }
     }
 }
-
-pub mod responses {
-    use serde::{Deserialize, Serialize};
-
-    #[derive(Debug, Serialize, Deserialize)]
-    pub struct PlotlyPlot {
-        pub(crate) layout: String,
-        pub(crate) traces: Vec<String>
-    }
-}
-
 
 #[cfg(test)]
 mod test {

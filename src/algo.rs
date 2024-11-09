@@ -133,7 +133,7 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split
 
 
 pub struct MLAlgorithmResponse {
-    pub raw_cf_matrix: ConfusionMatrix<&'static str>,
+    pub cf_matrix: ConfusionMatrix<&'static str>,
     pub accuracy: f32,
     pub precision: f32,
     pub recall: f32,
@@ -153,7 +153,7 @@ impl MLAlgorithmResponse {
         let recall = matrix.recall();
 
         Self {
-            raw_cf_matrix: cf_matrix,
+            cf_matrix,
             accuracy,
             precision,
             recall,
@@ -188,7 +188,7 @@ mod test {
 
         let result = response.unwrap();
         println!("Logistic Regression Algorithm");
-        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Max Iterations: {}", result.iterations.unwrap());
         println!("Threshold {}", result.threshold.unwrap());
         println!("Accuracy {}", result.accuracy);
@@ -214,7 +214,7 @@ mod test {
 
         let result = response.unwrap();
         println!("Gaussian Naive Bayes Algorithm");
-        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Accuracy {}", result.accuracy);
         println!("Precision {}", result.precision);
         println!("Recall {}", result.recall);

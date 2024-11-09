@@ -1,5 +1,4 @@
-﻿use std::error::Error;
-use polars::prelude::{LazyFrame};
+﻿use polars::prelude::{LazyFrame};
 use crate::frames::hyperaktiv::load_patient_info;
 use crate::traits::{PatientInfoFilter, PatientInfoSelection, PatientInfoTranslation};
 

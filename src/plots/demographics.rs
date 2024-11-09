@@ -1,11 +1,9 @@
 ﻿use error::Error;
 use std::error;
-use plotlars::{Axis, BarPlot, HeatMap, Plot, ScatterPlot, Text};
+use plotlars::{Axis, BarPlot, HeatMap, Plot, Text};
 use polars::prelude::{col, lit, DataType, SortMultipleOptions};
 use crate::enums::{AdhdSubtype, Age, Gender};
 use crate::frames::{get_all_patient_info_raw};
-use crate::http::responses::{PlotlyPlot};
-use crate::plots;
 use crate::traits::PatientInfoTranslation;
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender

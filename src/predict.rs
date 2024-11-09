@@ -95,7 +95,7 @@ mod test {
     fn trains_model_for_comorbidity_of_mental_health_condition() {
         let result = comorbidity_of_mental_health_condition().unwrap();
         println!("Comorbidity of Mental Health Conditions");
-        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Accuracy {}", result.accuracy);
         println!("Precision {}", result.precision);
         println!("Recall {}\n", result.recall);
@@ -107,7 +107,7 @@ mod test {
     fn trains_model_for_comorbidity_of_bipolar_disorder() {
         let result = comorbidity_of_bipolar_disorder().unwrap();
         println!("Comorbidity of Bipolar Disorder");
-        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Accuracy {}", result.accuracy);
         println!("Precision {}", result.precision);
         println!("Recall {}\n", result.recall);
@@ -119,7 +119,7 @@ mod test {
     fn trains_model_for_comorbidity_of_unipolar_depression() {
         let result = comorbidity_of_unipolar_depression().unwrap();
         println!("Comorbidity of Unipolar Depression");
-        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Accuracy {}", result.accuracy);
         println!("Precision {}", result.precision);
         println!("Recall {}\n", result.recall);
@@ -130,7 +130,7 @@ mod test {
     fn trains_model_for_comorbidity_of_anxiety() {
         let result = comborbidity_of_anxiety_disorder().unwrap();
         println!("Comorbidity of Anxiety");
-        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Accuracy {}", result.accuracy);
         println!("Precision {}", result.precision);
         println!("Recall {}\n", result.recall);
@@ -141,7 +141,7 @@ mod test {
     fn trains_model_for_comorbidity_of_substance_abuse_disorder() {
         let result = comorbidity_of_substance_abuse_disorder().unwrap();
         println!("Comorbidity of Substance Abuse");
-        println!("Confusion Matrix: {:?}", result.raw_cf_matrix);
+        println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Accuracy {}", result.accuracy);
         println!("Precision {}", result.precision);
         println!("Recall {}\n", result.recall);
