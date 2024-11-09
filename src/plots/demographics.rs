@@ -43,7 +43,7 @@ pub fn plot_adhd_type_by_age_group(with_controls: bool) -> Result<String, Box<dy
         .build()
         .to_json()?;
     
-    Ok(serde_json::to_string(&plots)?)
+    Ok(plots)
 }
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
@@ -88,7 +88,7 @@ pub fn plot_adhd_type_by_gender(gender: Option<Gender>, with_controls: bool) -> 
         .build()
         .to_json()?;
  
-    Ok(serde_json::to_string(&plots)?)
+    Ok(plots)
 }
 
 
