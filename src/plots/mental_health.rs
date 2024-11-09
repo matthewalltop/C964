@@ -18,7 +18,6 @@ pub fn plot_comorbid_mental_health_conditions() -> Result<String, Box<dyn Error>
             calculate_occurence("SUBSTANCE"),
             calculate_occurence("OTHER")
         ])
-        
         .collect()?;
     
     // DEBUG

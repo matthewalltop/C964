@@ -1,23 +1,23 @@
 <section class="my-2 mx-2">
   <app-explore-nav-bar (selectedVisualization)="onVisualizationChanged($event)"
-    (selectedCategory)="onCategoryChanged($event)"></app-explore-nav-bar>
+    (search)="submit($event)"></app-explore-nav-bar>
 </section>
 <section class="my-2">
-  <!-- TODO Add some text here-->
+  <!-- TODO Add some descriptive text here?-->
+  <!-- NOTE: This may be a good place to use the markdown component & load from external files based on the selection. -->
 </section>
 <section class="mt-4">
   <ng-container *ngIf="selectedVisualization$ | async as visualization">
     <div class="container">
       @if(visualization === 'Graph') {
-      <ng-container *ngIf="plotlyResponse$ | async as graph; else loading">
+      <ng-container *ngIf="plotlyData$ | async as graph; else loading">
         <div class="box">
           <plotly-plot [layout]="graph.layout" [data]="graph.data"></plotly-plot>
         </div>
       </ng-container>
       } @else {
-      <ng-container *ngIf="gridOptions$ | async as gridOptions; else loading">
-        <ag-grid-angular style="width: 100%; height: 550px;" class="ag-theme-quartz-dark" [rowData]="rowData$ | async"
-          [gridOptions]="gridOptions"></ag-grid-angular>
+      <ng-container *ngIf="agGridData$ | async as gridData; else loading">
+        <app-grid [data]="gridData"></app-grid>
       </ng-container>
       }
     </div>

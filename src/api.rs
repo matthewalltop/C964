@@ -1,15 +1,16 @@
-﻿use axum::extract::Query;
-use crate::enums::{AdhdSubtype, Age, Gender};
+﻿use std::str::FromStr;
+use axum::extract::Query;
+use crate::enums::{Gender};
 use crate::frames::demographics::adhd_subtype_info;
 use crate::frames::mental_health::{patient_info_has_anxiety, patient_info_has_bipolar_disorder, patient_info_has_other_mental_health_condition, patient_info_has_substance_abuse_disorder, patient_info_has_unipolar_depression, patients_with_comorbid_mental_health_conditions};
 use crate::http::requests::{DemographicCategory, DemographicParams, DisplayType, MentalHealthCategory, MentalHealthParams, PredictParams};
 use crate::plots::demographics::{plot_adhd_type_by_age_group, plot_adhd_type_by_gender};
 
-pub async fn demographic_plot_handler(params: Query<DemographicParams>) -> String {
+pub async fn demographic_handler(params: Query<DemographicParams>) -> String {
     let query = params.0;
-    let display = query.display.unwrap_or(DisplayType::Plot);
-    let category = query.category.unwrap_or(DemographicCategory::None);
-    let gender = query.gender.unwrap_or(Gender::None);
+    let display = DisplayType::from_str(&query.display.unwrap_or("Plot".into())).unwrap();
+    let category = DemographicCategory::from_str(&query.sub_category.unwrap_or("".into())).unwrap();
+    let gender = Gender::from_str(&query.gender.unwrap_or("".into())).unwrap();
     let with_controls = query.with_controls.unwrap_or(false);
     
     let result = match display { 
@@ -26,8 +27,8 @@ pub async fn demographic_plot_handler(params: Query<DemographicParams>) -> Strin
 
 pub async fn mental_health_handler(params: Query<MentalHealthParams>) -> String {
     let query = params.0;
-    let display = query.display.unwrap_or(DisplayType::Plot);
-    let category = query.category.unwrap_or(MentalHealthCategory::None);
+    let display = DisplayType::from_str(&query.display.unwrap_or("Plot".into())).unwrap();
+    let category = MentalHealthCategory::from_str(&query.category.unwrap_or("".into())).unwrap();
     // let gender = query.gender.unwrap_or(Gender::None);
     let with_controls = query.with_controls.unwrap_or(false);
 
@@ -54,3 +55,41 @@ pub async fn mental_health_handler(params: Query<MentalHealthParams>) -> String 
 pub async fn predict_handler(predict_query: Query<PredictParams>) -> String {
     unimplemented!()
 }
+
+
+
+// #[cfg(test)]
+// mod test {
+//     use super::*;
+//     use axum::{body::Body, http::Request, Router};
+//     use axum::routing::{get, post};
+//     use serde::de::Error;
+//     use tower::ServiceExt;
+// 
+//     async fn app() -> Router {
+//         Router::new().route("/demographics", get(demographic_handler))
+//             .route("/mental-health", get(mental_health_handler))
+//             .route("/predict", post(predict_handler))
+//     }
+//     
+//     #[tokio::test]
+//     async fn test_demographics() {
+//         assert!(send_request_get_body("/demographics", "display=plot"))
+//         
+//     }
+// 
+// 
+//     async fn send_request_get_body(url: &str, query: &str) -> Result<String, Box<dyn Error>> {
+//         app()
+//             .oneshot(
+//                 Request::builder()
+//                     .uri(format!("{url}/?{query}"))
+//                     .body(Body::empty())
+//                     .unwrap(),
+//             )
+//             .await
+//             .unwrap()
+//     }
+//     
+//     
+// }

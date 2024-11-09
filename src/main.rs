@@ -14,7 +14,7 @@ use axum::http::{Method};
 use axum::routing::post;
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowOrigin, CorsLayer};
-use crate::api::{demographic_plot_handler, predict_handler, mental_health_handler};
+use crate::api::{demographic_handler, predict_handler, mental_health_handler};
 
 #[tokio::main]
 async fn main() {
@@ -31,7 +31,7 @@ async fn main() {
     // build our application with a route
     let app = Router::new()
         .route("/", get(root))
-        .route("/demographics", get(demographic_plot_handler))
+        .route("/demographics", get(demographic_handler))
         .route("/mental-health", get(mental_health_handler))
         .route("/predict", post(predict_handler))
         .layer(ServiceBuilder::new()

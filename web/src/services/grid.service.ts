@@ -13,8 +13,6 @@ const baseUrl = environment.api.base;
 export class GridService {
   private http = inject(HttpClient);
 
-  constructor() { }
-
   getTable(endpoint: string, params?: HttpParams | undefined): Observable<TableData> {
     return this.http.get(`${baseUrl}/${endpoint}`, { params }).pipe(
       map((res) => JSON.stringify(res)),
@@ -27,7 +25,7 @@ export class GridService {
     );
   }
 
-  public formatGridOptions(data: Observable<TableData>): Observable<GridOptions> {
+  public createGridOptionsAndRowData(data: Observable<TableData>): Observable<[GridOptions, any[]]> {
     return data.pipe(
       map((res) => {
         const options: GridOptions = {
@@ -51,17 +49,24 @@ export class GridService {
           },
           animateRows: true,
           pagination: true,
-          paginationAutoPageSize: true,
-          // TODO: These need to go into a component.
-          // onGridReady: (params: GridReadyEvent) => {
-          //   this.gridApi = params.api;
-          //   this.gridApi?.sizeColumnsToFit();
-          // },
-          // onGridSizeChanged: () => {
-          //   this.gridApi?.sizeColumnsToFit();
+          paginationAutoPageSize: true
         };
 
-        return options;
+        const rows = res.columns
+          .map((column) => [column.name.replace(' ', '_').toLocaleLowerCase(), column.values]);
+
+        let rowData = [];
+        // Create an object with the column name as the key and the values at the current index as the value.
+        // When all column names are added, push the object to the rowData array.
+        for (let i = 0; i < rows[0][1].length; i++) {
+          const row: any = {};
+          rows.forEach(([key, values]) => {
+            row[key as string] = values[i];
+          });
+          rowData.push(row);
+        }
+
+        return [options, rowData];
       }));
   }
 }

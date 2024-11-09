@@ -3,19 +3,27 @@ name = "adhd"
 version = "0.1.0"
 edition = "2021"
 
+[profile.release]
+debug = false
+
+[profile.dev]
+debug = true
+
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 axum = "0.7.7"
 hashbrown = { version = "0.15.0", features = ["rayon", "serde"] }
+http-body-util = "0.1.2"
 linfa = { version = "0.7.0"}
 linfa-bayes = "0.7.0"
 linfa-logistic = "0.7.0"
 # linfa uses this version of ndarray.
 ndarray = { version = "0.15", features = ["approx"] }
 ndarray-stats = "0.5.0"
-plotlars = "0.6.0"
-polars = { version = "0.43.1", features = [
+plotlars = "0.7.2"
+polars = { version = "0.44.2", features = [
     "lazy",
     "json",
     "serde",
@@ -25,8 +33,9 @@ polars = { version = "0.43.1", features = [
     "ndarray",
     "dtype-categorical"
 ] }
-serde = "1.0.213"
+serde = { version = "1.0.213", featuers = ["serde_as"] }
 serde_json = "1.0.128"
+serde_with = "3.11.0"
 tokio = { version = "1.41.0", features = ["rt", "macros", "rt-multi-thread"] }
 tower = "0.5.1"
 tower-http = { version = "0.6.1", features = ["cors"] }

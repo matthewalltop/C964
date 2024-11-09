@@ -11,16 +11,17 @@ For the evaluator:
 ### Project Folder Structure
 
 - `.github` - Contains GitHub actions workflows to build/test/lint the project. 
-- `data` - Contains data files - inputs and outputs, where applicable.
+- `data` - Contains data files - specifically, the `hyperaktiv` dataset, sourced from [Kaggle](https://www.kaggle.com/datasets/arashnic/adhd-diagnosis-data)
 - `docs` - Contains documentation artifacts
-- `hyperaktiv` - Contains the `hyperaktiv` dataset, sourced from [Kaggle](https://www.kaggle.com/datasets/arashnic/adhd-diagnosis-data)
 - `src` - Contains Rust source code for the project.
     - `algo` - Contains application of machine learning algorithms.
     - `api` - Contains API handlers for axum.
-    - `experiments` - Contains higher-order experiments on data utilizing applied algorithms in `algo`  
+    - `enums` - Contains enum mappings & trait impl for Hyperaktiv dataset
     - `frames` - Contains data frames built on top of the `hyperaktiv` data. This is where data is enriched through cleaning & transformations.'
-    - `http` - Contains elements for web interop
+    - `http` - Contains elements for API interop - request & response models + trait implementations
     - `plots` - Contains a collection of visualizations built on top of `frames` and `experiments`
+    - `predict` - Contains machine learning model training implementations.
+    - `traits` - Contains Rust traits used to extend dataframes - clean, filter, translate, and query data.
 - `web` - Contains Angular web application serving as frontend for the project.
 
 

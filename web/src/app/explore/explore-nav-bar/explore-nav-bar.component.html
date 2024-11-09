@@ -14,20 +14,28 @@
   <div class="column is-2">
     <label for="explore-category-select" class="label has-text-white">Sub-Category</label>
     <div class="select is-normal is-info">
-      <select name="explore-category-select" id="explore-category-select" (change)="changeCategory($event)">
-        @if(category === 'Demographics') {
-        <ng-container *ngFor="let opt of demographicSubCateories">
-          <option [value]="opt">{{demographicCategoryMapping[opt]}}</option>
-        </ng-container>
+      <ng-container *ngIf="category$ | async as currentCategory">
+        @if(currentCategory === 'Demographics') {
+
+        <select name="explore-category-demo-select" id="explore-category-demo-select"
+          (change)="changeSubCategory($event)">
+          <ng-container *ngFor="let opt of demographicSubCateories">
+            <option [value]="opt">{{demographicCategoryMapping[opt]}}</option>
+          </ng-container>
+        </select>
+
         } @else {
-        <ng-container *ngFor="let opt of mentalHealthSubCategories">
-          <option [value]="opt">{{mentalHealthCategoryMapping[opt]}}</option>
-        </ng-container>
+
+        <select name="explore-category-mh-select" id="explore-category-mh-select" (change)="changeSubCategory($event)">
+          <ng-container *ngFor="let opt of mentalHealthSubCategories">
+            <option [value]="opt">{{mentalHealthCategoryMapping[opt]}}</option>
+          </ng-container>
+        </select>
+
         }
-      </select>
+      </ng-container>
     </div>
   </div>
-
 
   <div class="column is-2">
     <label for="explore-category-select" class="label has-text-white">Visual Format</label>
@@ -43,7 +51,7 @@
 
   <div class="column is-2">
     <label for="include-control-data-radio" class="label has-text-white">Include Control Data?</label>
-    <div class="radios control">
+    <div class="radios control is-align-content-center py-3">
       <label class="radio">
         <input type="radio" name="withcontrols" [checked]="includeControlsValue" (change)="toggleControls()" />
         Yes
@@ -55,8 +63,12 @@
     </div>
   </div>
 
+  <div class="column is-2"></div>
 
-  <div class="column is-4">
-    <!-- TODO: Dynamic content. -->
+  <div class="column is-2 is-align-content-right">
+    <div class="is-align-content-center pt-5">
+      <button class="button is-success" (click)="submit($event)">Fetch Data</button>
+    </div>
   </div>
+
 </div>

@@ -9,13 +9,13 @@ export const ExploreDataCategoryMapping: Record<ExploreDataCategory, string> = {
 };
 
 export enum DemographicCategory {
-  ADHDSubtypesByGender = 'ADHDSubtypesByGender',
-  ADHDSubtypesByAgeGroup = 'ADHDSubtypesByAgeGroup'
+  ADHDSubtypesByAgeGroup = 'ADHDSubtypesByAgeGroup',
+  ADHDSubtypesByGender = 'ADHDSubtypesByGender'
 }
 
 export const DemographicCategoryMapping: Record<DemographicCategory, string> = {
-  [DemographicCategory.ADHDSubtypesByGender]: "Data By Gender",
-  [DemographicCategory.ADHDSubtypesByAgeGroup]: "Data By Age Group"
+  [DemographicCategory.ADHDSubtypesByAgeGroup]: "Data By Age Group",
+  [DemographicCategory.ADHDSubtypesByGender]: "Data By Gender"
 };
 
 export enum MentalHealthCategory {
@@ -47,13 +47,20 @@ export const VisualizationOptionsMapping: Record<VisualizationOptions, string> =
   [VisualizationOptions.Table]: "Table"
 }
 
-export class ExploreRequest {
+export class DemographicsRequest {
   constructor(
-    public display: VisualizationOptions,
-    public category: ExploreDataCategory,
-    public adhd_subtype: string | null = null,
+    public display: string,
+    public sub_category: string,
     public gender: string | null = null,
-    public age_range: string | null = null,
+    public with_controls: boolean = false
+  ){}
+}
+
+export class MentalHealthRequest {
+  constructor(
+    public display: string,
+    public sub_category: string,
+    public gender: string | null = null,
     public with_controls: boolean = false
   ){}
 }

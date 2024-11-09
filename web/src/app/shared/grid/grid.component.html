@@ -1,0 +1,7 @@
+<ag-grid-angular style="width: 100%; height: 550px;" class="ag-theme-quartz-dark" [rowData]="rowData$ |async"
+  [gridOptions]="(gridOptions$ | async) ?? undefined">
+</ag-grid-angular>
+
+<ng-template #loading>
+  <progress class="progress is-small is-primary" max="100">15%</progress>
+</ng-template>

@@ -1,8 +1,8 @@
 ﻿pub mod requests {
     use std::fmt;
     use std::str::FromStr;
-    use serde::{Deserialize, Serialize};
-    use crate::enums::Gender;
+    use serde::{Deserialize, Deserializer, Serialize};
+    use serde_with::{serde_as, NoneAsEmptyString};
 
     #[derive(Debug, Serialize, Deserialize, PartialEq)]
     pub enum DisplayType {
@@ -27,11 +27,13 @@
             }
         }
     }
-    #[derive(Deserialize)]
+    #[serde_as]
+    #[derive(Debug, Deserialize)]
     pub struct DemographicParams{
-        pub(crate) display: Option<DisplayType>,
-        pub(crate) category: Option<DemographicCategory>,
-        pub(crate) gender: Option<Gender>,
+        #[serde_as(as = "NoneAsEmptyString")]
+        pub(crate) display: Option<String>,
+        pub(crate) sub_category: Option<String>,
+        pub(crate) gender: Option<String>,
         pub(crate) with_controls: Option<bool>,
     }
 
@@ -39,17 +41,25 @@
         pub fn default() ->  DemographicParams {
             DemographicParams {
                 display: None,
-                category: None,
+                sub_category: None,
                 gender: None,
                 with_controls: None,
             }
         }
     }
 
-    #[derive(Deserialize)]
+    impl fmt::Display for DemographicParams {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            write!(f, "{:?}", self)
+        }
+    }
+
+    #[serde_as]
+    #[derive(Debug, Deserialize)]
     pub struct MentalHealthParams{
-        pub(crate) display: Option<DisplayType>,
-        pub(crate) category: Option<MentalHealthCategory>,
+        #[serde_as(as = "NoneAsEmptyString")]
+        pub(crate) display: Option<String>,
+        pub(crate) category: Option<String>,
         pub(crate) with_controls: Option<bool>,
     }
 
@@ -63,15 +73,15 @@
         }
     }
 
-    #[derive(Deserialize)]
+    #[derive(Debug, Deserialize)]
     pub struct PredictParams {
-        pub(crate) demographic: Option<String>
+        pub(crate) gender: Option<String>
     }
 
     impl PredictParams {
         pub fn default() -> PredictParams {
             PredictParams {
-                demographic: None
+                gender: None
             }
         }
     }
@@ -123,7 +133,12 @@
     
         fn from_str(s: &str) -> Result<Self, Self::Err> {
             match s.to_lowercase().as_str() {
-                // TODO
+                "hascomorbidmentalhealthcondition" => Ok(MentalHealthCategory::HasCoMorbidMentalHealthCondition),
+                "hasbipolardisorder" => Ok(MentalHealthCategory::HasBipolarDisorder),
+                "hasunipolardepression" => Ok(MentalHealthCategory::HasUnipolarDepression),
+                "hasanxiety" => Ok(MentalHealthCategory::HasAnxiety),
+                "hassubstanceabusedisorder" => Ok(MentalHealthCategory::HasSubstanceAbuseDisorder),
+                "hasother" => Ok(MentalHealthCategory::HasOther),
                 _ => Ok(MentalHealthCategory::None)
             }
         }
@@ -134,25 +149,28 @@ pub mod responses {
     use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Serialize, Deserialize)]
-    pub struct PlotlyGraph {
-        layout: String,
-        data: Vec<String>
-    }
-
-    impl PlotlyGraph {
-        pub(crate) fn new(layout: String, traces: Vec<String>) -> PlotlyGraph {
-            Self {
-                layout,
-                data: traces
-            }
-        }
+    pub struct PlotlyPlot {
+        pub(crate) layout: String,
+        pub(crate) traces: Vec<String>
     }
 }
 
 
-
 #[cfg(test)]
 mod test {
+    use crate::http::requests::DisplayType;
+    use super::*;
+    
+    #[test]
+    fn display_type_to_strings() {
+        assert_eq!(DisplayType::Plot.to_string(), "Plot");
+        assert_eq!(DisplayType::Table.to_string(), "Table");
+    }
 
-
+    #[test]
+    fn display_type_from_strings() {
+        
+    }
+    
+    
 }

@@ -2,113 +2,68 @@ import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular';
 import { PlotlyModule } from 'angular-plotly.js';
-import { DemographicService } from '../../services/demographic.service';
+import { ExploreDataService } from '../../services/explore-data.service';
 import { GridService } from '../../services/grid.service';
-import { GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community';
-import { Observable, BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { PlotlyGraph, TableData } from '../../models/responses';
 import { ExploreNavBarComponent } from './explore-nav-bar/explore-nav-bar.component';
-import { ExploreDataCategory, ExploreDataCategoryMapping, VisualizationOptions } from '../../models/requests';
+import { DemographicCategory, DemographicsRequest, MentalHealthRequest } from '../../models/requests';
+import { GridComponent } from '../shared/grid/grid.component';
 
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, AgGridModule, PlotlyModule, ExploreNavBarComponent],
+  imports: [CommonModule, AgGridModule, PlotlyModule, ExploreNavBarComponent, GridComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [DemographicService, GridService],
+  providers: [ExploreDataService, GridService],
   templateUrl: './explore.component.html',
   styleUrl: './explore.component.scss'
 })
 export class ExploreComponent {
-  private demographicService = inject(DemographicService);
-  private tableService = inject(GridService);
+  private dataService = inject(ExploreDataService);
 
-  /* For dropdown values & selection changes */
   public selectedVisualization$: BehaviorSubject<string> = new BehaviorSubject<string>('Graph');
-  public selectedCategory$: BehaviorSubject<string> = new BehaviorSubject<string>('ADHD Subtypes');
-
-  // TODO: Pull these out into services & abstract the template into re-usable components.
-  public plotlyResponse$: Observable<PlotlyGraph> | undefined;
-  public tableResponse$: Observable<TableData> | undefined;
-
-  /** Necessary for Ag-Grid */
-  public gridApi: GridApi | undefined;
-  public gridOptions$: Observable<GridOptions> | undefined;
-  public rowData$: BehaviorSubject<any[] | null> = new BehaviorSubject<any[] | null>(null);
-
-
+  public plotlyData$: BehaviorSubject<PlotlyGraph | null> = new BehaviorSubject<PlotlyGraph | null>(null);
+  public agGridData$: BehaviorSubject<TableData | null> = new BehaviorSubject<TableData | null>(null);
 
   ngOnInit() {
-    this.plotlyResponse$ = this.demographicService.getDemographics();
-    this.tableResponse$ = this.tableService.getTable("subtype");
-
-    // TODO: This builds a dynamic ag-grid.
-    // This can probably be moved over into a service that just provides these options directly.
-
-    this.gridOptions$ = this.tableResponse$!.pipe(
-      map((res) => {
-
-        const options: GridOptions = {
-          columnDefs: res.columns.map((column) => {
-            return {
-              headerName: column.name,
-              field: column.name.replace(' ', '_').toLocaleLowerCase()
-            };
-          }),
-          defaultColDef: {
-            menuTabs: ['filterMenuTab'],
-            filter: 'agTextColumnFilter',
-            filterParams: {
-              type: 'text',
-              filterOptions: ['contains', 'startsWith', 'endsWith'],
-              defaultOption: 'contains',
-              buttons: ['reset']
-            },
-            sortable: true,
-            resizable: true,
-          },
-          animateRows: true,
-          pagination: true,
-          paginationAutoPageSize: true,
-          onGridReady: (params: GridReadyEvent) => {
-            this.gridApi = params.api;
-            this.gridApi?.sizeColumnsToFit();
-          },
-          onGridSizeChanged: () => {
-            this.gridApi?.sizeColumnsToFit();
-          },
-        }
-
-        const rows = res.columns
-          .map((column) => [column.name.replace(' ', '_').toLocaleLowerCase(), column.values]);
-
-        let rowData = [];
-        // Create an object with the column name as the key and the values at the current index as the value.
-        // When all column names are added, push the object to the rowData array.
-        for (let i = 0; i < rows[0][1].length; i++) {
-          const row: any = {};
-          rows.forEach(([key, values]) => {
-            row[key as string] = values[i];
-          });
-          rowData.push(row);
-        }
-
-        this.rowData$.next(rowData);
-
-        return options;
-      }));
+    this.updateDemographicsPlotData(DemographicCategory.ADHDSubtypesByAgeGroup, false);
+    this.updateDemographicsTableData(DemographicCategory.ADHDSubtypesByAgeGroup, false);
   }
 
-  onCategoryChanged(category: string) {
-    const categoryEnum = ExploreDataCategory[category as keyof typeof ExploreDataCategory];
-    this.selectedCategory$.next(ExploreDataCategoryMapping[categoryEnum]);
+  // Drives the visualization change in the template.
+  onVisualizationChanged($event: string) {
+    this.selectedVisualization$.next($event);
   }
 
-  onVisualizationChanged(visualization: string) {
-    if (VisualizationOptions.Graph === visualization) {
-      this.selectedVisualization$.next('Graph');
+  submit($event: DemographicsRequest | MentalHealthRequest) {
+    const request = typeof $event === typeof DemographicsRequest ? $event as DemographicsRequest : $event as MentalHealthRequest;
+
+    // TODO: Can be cleaned up more.
+    if (typeof request === typeof DemographicsRequest) {
+      if (request.display === 'Graph') {
+          this.updateDemographicsPlotData(request.sub_category, request.with_controls);
+      } else {
+          this.updateDemographicsTableData(request.sub_category, request.with_controls);
+      }
     } else {
-      this.selectedVisualization$.next('Table');
+        if (request.display === 'Graph') {
+          this.updateDemographicsPlotData(request.sub_category, request.with_controls);
+      } else {
+          this.updateDemographicsTableData(request.sub_category, request.with_controls);
+      }
     }
+  }
+
+  private updateDemographicsTableData(subCategory: string, includeControls: boolean) {
+      this.dataService.getDemographicsTableData$(subCategory.toLocaleLowerCase(), '', includeControls).subscribe((res) => {
+          this.agGridData$.next(res);
+        });
+  }
+
+  private updateDemographicsPlotData(subCategory: string, includeControls: boolean) {
+    this.dataService.plotDemographics$(subCategory, '', includeControls).subscribe((res) => {
+      this.plotlyData$.next(res);
+    });
   }
 }
