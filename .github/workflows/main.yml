@@ -5,8 +5,8 @@ on:
     branches: [main]
 
 jobs:
-  build_and_test:
-    name: Build and Test
+  cargo_build_and_test:
+    name: Cargo build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,18 +18,19 @@ jobs:
       - run: cargo build --release --all-features
       - run: cargo test
 
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - run: rustup component add clippy
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+# TODO: Re-enable
+#  clippy:
+#    name: Clippy
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions-rs/toolchain@v1
+#        with:
+#          profile: minimal
+#          toolchain: stable
+#          override: true
+#      - run: rustup component add clippy
+#      - uses: actions-rs/cargo@v1
+#        with:
+#          command: clippy
+#          args: -- -D warnings

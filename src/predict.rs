@@ -1,9 +1,10 @@
-﻿use polars::prelude::{col, lit, when};
+﻿use std::error::Error;
+use polars::prelude::{col, lit, when};
 use crate::algo::{apply_logistic_regression, MLAlgorithmResponse};
 use crate::frames::{get_all_patient_info_raw};
 use crate::traits::PatientInfoTranslation;
 
-pub fn comorbidity_of_mental_health_condition() -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
+pub fn comorbidity_of_mental_health_condition() -> Result<MLAlgorithmResponse, Box<dyn Error>> {
     let df = get_all_patient_info_raw(true)
         .with_mental_health_translation()
         .with_column(
@@ -27,7 +28,7 @@ pub fn comorbidity_of_mental_health_condition() -> Result<MLAlgorithmResponse, B
 }
 
 /// Experiment to determine comorbidity of bipolar disorder among patient population.
-pub fn comorbidity_of_bipolar_disorder() -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
+pub fn comorbidity_of_bipolar_disorder() -> Result<MLAlgorithmResponse, Box<dyn Error>> {
     // Start by grabbing all the patients
     let df = get_all_patient_info_raw(true)
         .select([
@@ -42,7 +43,7 @@ pub fn comorbidity_of_bipolar_disorder() -> Result<MLAlgorithmResponse, Box<dyn 
     Ok(response)
 }
 
-pub fn comorbidity_of_unipolar_depression() -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
+pub fn comorbidity_of_unipolar_depression() -> Result<MLAlgorithmResponse, Box<dyn Error>> {
     // Start by grabbing all the patients
     let df = get_all_patient_info_raw(true)
         .select([
@@ -57,7 +58,7 @@ pub fn comorbidity_of_unipolar_depression() -> Result<MLAlgorithmResponse, Box<d
     Ok(response)
 }
 
-pub fn comborbidity_of_anxiety_disorder() -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
+pub fn comborbidity_of_anxiety_disorder() -> Result<MLAlgorithmResponse, Box<dyn Error>> {
     // Start by grabbing all the patients
     let df = get_all_patient_info_raw(true)
         .select([
@@ -72,7 +73,7 @@ pub fn comborbidity_of_anxiety_disorder() -> Result<MLAlgorithmResponse, Box<dyn
     Ok(response)
 }
 
-pub fn comorbidity_of_substance_abuse_disorder() -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
+pub fn comorbidity_of_substance_abuse_disorder() -> Result<MLAlgorithmResponse, Box<dyn Error>> {
     // Start by grabbing all the patients
     let df = get_all_patient_info_raw(true)
         .select([

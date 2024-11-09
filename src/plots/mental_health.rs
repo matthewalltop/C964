@@ -1,5 +1,5 @@
 ﻿use std::error::Error;
-use plotlars::{Plot, HeatMap };
+use plotlars::{Plot, HeatMap, ScatterPlot};
 use polars::prelude::{col, Expr};
 use crate::frames::{get_all_patient_info_raw};
 use crate::traits::{PatientInfoFilter, PatientInfoTranslation};
@@ -12,29 +12,23 @@ pub fn plot_comorbid_mental_health_conditions() -> Result<String, Box<dyn Error>
         .with_gender_translation()
         .group_by(["ADHD Type", "Gender"])
         .agg([
-            calculate_occurence("BIPOLAR"),
-            calculate_occurence("UNIPOLAR"),
-            calculate_occurence("ANXIETY"),
-            calculate_occurence("SUBSTANCE"),
-            calculate_occurence("OTHER")
+            calculate_occurrence("BIPOLAR"),
+            calculate_occurrence("UNIPOLAR"),
+            calculate_occurrence("ANXIETY"),
+            calculate_occurrence("SUBSTANCE"),
+            calculate_occurrence("OTHER")
         ])
         .collect()?;
     
     // DEBUG
-    // println!("{}", df);
+    println!("{}", df);
             
-    HeatMap::builder()
-        .data(&df)
-        .x("Gender")
-        .y("ADHD Type")
-        .z("BIPOLAR_SUM")
-        .build()
-        .plot();
+    
     
     Ok("".into())
 }
 
-fn calculate_occurence(condition: &str) -> Expr {
+fn calculate_occurrence(condition: &str) -> Expr {
     col(condition).eq(1)
         .sum()
         .alias(format!("{}_SUM", condition))
