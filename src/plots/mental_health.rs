@@ -1,10 +1,9 @@
 ﻿use std::ops::Div;
-use plotlars::{Plot};
 use polars::prelude::{as_struct, col, lit, when, Expr};
 use crate::enums::MentalHealthCondition;
 use crate::frames::{get_all_patient_info_raw};
 use crate::JsonResponse;
-use crate::traits::{PatientInfoFilter, PatientInfoSelection, PatientInfoTranslation};
+use crate::traits::{PatientInfoFilter, PatientInfoTranslation};
 
 pub fn plot_comorbid_mental_health_conditions(with_controls: bool) -> JsonResponse {
     let df = get_all_patient_info_raw(with_controls)

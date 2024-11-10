@@ -4,7 +4,6 @@ use linfa_logistic::LogisticRegression;
 use ndarray::{s, ArrayBase, Dim, OwnedRepr};
 use polars::frame::DataFrame;
 use polars::prelude::{Float64Type, IndexOrder};
-use serde::{Deserialize, Serialize};
 
 /// Applies logistic regression to the provided dataset
 pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
@@ -46,11 +45,11 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
         // Predict
         let predict = model.set_threshold(threshold).predict(test);
 
-        let confusion_matrix = predict
-            .confusion_matrix(test)
-            .expect("Can create a confusion matrix");
+        
 
-        confusion_matrix
+        predict
+            .confusion_matrix(test)
+            .expect("Can create a confusion matrix")
     };
 
 
@@ -115,17 +114,17 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split
         >| -> ConfusionMatrix<&'static str> {
 
         let model = GaussianNb::params()
-            .fit(&train)
+            .fit(train)
             .unwrap();
 
         // Predict
         let predict = model.predict(test);
 
-        let confusion_matrix = predict
-            .confusion_matrix(test)
-            .expect("Can create a confusion matrix");
+        
 
-        confusion_matrix
+        predict
+            .confusion_matrix(test)
+            .expect("Can create a confusion matrix")
     };
 
 
