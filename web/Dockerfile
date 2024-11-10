@@ -6,8 +6,9 @@
 
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
-ARG NODE_VERSION=21.0.0
+ARG NODE_VERSION=lts
 ARG PNPM_VERSION=9.9.0
+ARG ANGULAR_VERSION=17.3.11
 
 ################################################################################
 # Use node image for base image for all stages.
@@ -18,7 +19,7 @@ WORKDIR /usr/src/app
 
 # Install pnpm.
 RUN --mount=type=cache,target=/root/.npm \
-    npm install -g pnpm@${PNPM_VERSION}
+    npm install -g pnpm@${PNPM_VERSION} @angular/cli@${ANGULAR_VERSION}
 
 ################################################################################
 # Create a stage for installing production dependecies.
@@ -70,7 +71,7 @@ COPY --from=build /usr/src/app/dist ./dist
 
 
 # Expose the port that the application listens on.
-EXPOSE 3000
+EXPOSE 4200
 
 # Run the application.
 CMD pnpm start
