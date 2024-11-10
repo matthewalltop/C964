@@ -1,6 +1,6 @@
 <section class="my-2 mx-2">
   <app-explore-nav-bar (selectedVisualization)="onVisualizationChanged($event)"
-    (search)="submit($event)"></app-explore-nav-bar>
+    (selectedCategory)="onCategoryChanged($event)" (search)="submit($event)"></app-explore-nav-bar>
 </section>
 <section class="my-2">
   <!-- TODO Add some descriptive text here?-->
@@ -11,13 +11,15 @@
     <div class="container">
       @if(visualization === 'Graph') {
       <ng-container *ngIf="plotlyData$ | async as graph; else loading">
-        <div class="box">
-          <plotly-plot [layout]="graph.layout" [data]="graph.data"></plotly-plot>
+        <div *ngIf="plotCreated; else loading" class="box">
+          <plotly-plot [layout]="graph.layout" [data]="graph.traces"></plotly-plot>
         </div>
       </ng-container>
       } @else {
       <ng-container *ngIf="agGridData$ | async as gridData; else loading">
-        <app-grid [data]="gridData"></app-grid>
+        <div *ngIf="tableCreated; else loading" class="box">
+          <app-grid [data]="gridData"></app-grid>
+        </div>
       </ng-container>
       }
     </div>

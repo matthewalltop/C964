@@ -1,6 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { DemographicCategory, DemographicCategoryMapping, DemographicsRequest, ExploreDataCategory, ExploreDataCategoryMapping, MentalHealthCategory, MentalHealthCategoryMapping, MentalHealthRequest, VisualizationOptions, VisualizationOptionsMapping } from '../../../models/requests';
+import {
+  DemographicCategory,
+  DemographicCategoryMapping,
+  DemographicsRequest,
+  ExploreDataCategory,
+  ExploreDataCategoryMapping,
+  MentalHealthCategory,
+  MentalHealthCategoryMapping,
+  MentalHealthRequest,
+  VisualizationOptions,
+  VisualizationOptionsMapping
+} from '@models/requests';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 
 @Component({
@@ -11,10 +22,8 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
   styleUrl: './explore-nav-bar.component.scss'
 })
 export class ExploreNavBarComponent {
-  @Output() selectedCategory = new EventEmitter<string>();
-  @Output() selectedSubCategory = new EventEmitter<string>();
   @Output() selectedVisualization = new EventEmitter<string>();
-  @Output() includeControls = new EventEmitter<boolean>();
+  @Output() selectedCategory = new EventEmitter<string>();
   @Output() search = new EventEmitter<DemographicsRequest | MentalHealthRequest>();
 
   public categoryMapping = ExploreDataCategoryMapping;
@@ -34,6 +43,10 @@ export class ExploreNavBarComponent {
   public mentalHealthSubCategory$ = new BehaviorSubject<string>("All");
 
   public includeControlsValue = false;
+
+  get visualization() {
+    return this.visualization$.value;
+  }
 
   changeVisualization(event: any) {
     const visualSelection: string = event.target.value;
@@ -55,13 +68,10 @@ export class ExploreNavBarComponent {
     } else {
       this.mentalHealthSubCategory$.next(subCategorySelection);
     }
-
-    this.selectedSubCategory.emit(subCategorySelection);
   }
 
   toggleControls() {
     this.includeControlsValue = !this.includeControlsValue;
-    this.includeControls.emit(this.includeControlsValue);
   }
 
   submit(event: any) {

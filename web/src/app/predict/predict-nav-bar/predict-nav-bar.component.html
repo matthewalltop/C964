@@ -1,9 +1,6 @@
 <div class="columns">
 
-
-  <!--
-        public adhdTypeCategory$ = new BehaviorSubject<string>("All"); -->
-
+  <!-- Comorbidity Category Selection -->
   <div class="column is-2">
     <label for="predict-comorbidity-select" class="label has-text-white">Comorbidity</label>
     <div class="select is-normal is-info">
@@ -15,6 +12,7 @@
     </div>
   </div>
 
+  <!-- Gender Category Selection -->
   <div class="column is-2">
     <label for="predict-gender-select" class="label has-text-white">Gender</label>
     <div class="select is-normal is-info">
@@ -26,9 +24,9 @@
     </div>
   </div>
 
-
+  <!-- Age Range Category Selection -->
   <div class="column is-2">
-    <label for="predict-age-range-select" class="label has-text-white">Gender</label>
+    <label for="predict-age-range-select" class="label has-text-white">Age Ranges:</label>
     <div class="select is-multiple is-info">
       <select multiple name="age-range-select" id="age-range-select" (change)="changeAgeRanges($event)">
         <ng-container *ngFor="let opt of ageRangeCategories">
@@ -38,8 +36,9 @@
     </div>
   </div>
 
+  <!-- ADHD Subtype Category Selection -->
   <div class="column is-2">
-    <label for="predict-adhd-select" class="label has-text-white">Gender</label>
+    <label for="predict-adhd-select" class="label has-text-white">ADHD Type</label>
     <div class="select is-normal is-info">
       <select name="adhd-select" id="adhd-select" (change)="changeAdhdType($event)">
         <ng-container *ngFor="let opt of adhdTypeCategories">
@@ -49,6 +48,7 @@
     </div>
   </div>
 
+  <!-- Control Data Selection -->
   <div class="column is-2">
     <label for="include-control-data-radio" class="label has-text-white">Include Control Data?</label>
     <div class="radios control is-align-content-center py-3">
@@ -63,6 +63,7 @@
     </div>
   </div>
 
+  <!-- Submit Button -->
   <div class="column is-2 is-align-content-right">
     <div class="is-align-content-center pt-5">
       <button class="button is-success" (click)="submit($event)">Fetch Data</button>

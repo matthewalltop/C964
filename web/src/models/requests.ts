@@ -19,16 +19,16 @@ export const DemographicCategoryMapping: Record<DemographicCategory, string> = {
 };
 
 export enum MentalHealthCategory {
-        HasCoMorbidMentalHealthCondition = "HasCoMorbidMentalHealthCondition",
-        HasBipolarDisorder = "HasBipolarDisorder",
-        HasUnipolarDepression = "HasUnipolarDepression",
-        HasAnxiety = "HasAnxiety",
-        HasSubstanceAbuseDisorder = "HasSubstanceAbuseDisorder",
-        HasOther = "HasOther"
+        All = "All",
+        HasBipolarDisorder = "BIPOLAR",
+        HasUnipolarDepression = "UNIPOLAR",
+        HasAnxiety = "ANXIETY",
+        HasSubstanceAbuseDisorder = "SUBSTANCE",
+        HasOther = "OTHER"
 }
 
 export const MentalHealthCategoryMapping: Record<MentalHealthCategory, string> = {
-  [MentalHealthCategory.HasCoMorbidMentalHealthCondition]: "All",
+  [MentalHealthCategory.All]: "All",
   [MentalHealthCategory.HasBipolarDisorder]: "Bipolar Disorder",
   [MentalHealthCategory.HasUnipolarDepression]: "Unipolar Depression",
   [MentalHealthCategory.HasAnxiety]: "Anxiety",
@@ -59,33 +59,33 @@ export const GenderMapping: Record<Gender, string> = {
 }
 
 export enum AdhdType {
-  None = 'None',
+  All = 'All',
   ADHDPH = 'ADHD-PH',
   ADHDPI = 'ADHD-PI',
-  All = 'All'
+  None = 'None'
 }
 
 export const AdhdTypeMapping: Record<AdhdType, string> = {
-  [AdhdType.None]: "None",
+  [AdhdType.All]: "All",
   [AdhdType.ADHDPH]: "Predominantly Hyperactive",
   [AdhdType.ADHDPI]: "Predominantly Inattentive",
-  [AdhdType.All]: "All"
+  [AdhdType.None]: "None"
 }
 
 export enum AgeRange {
+  All = 'All',
   SeventeenToTwentyNine = '17-29',
   ThirtyToThirtyNine = '30-39',
   FortyToFortyNine = '40-49',
   FiftyToSixtySeven = '50-67',
-  All = 'All',
 }
 
 export const AgeRangeMapping: Record<AgeRange, string> = {
+  [AgeRange.All]: "All",
   [AgeRange.SeventeenToTwentyNine]: '17-29',
   [AgeRange.ThirtyToThirtyNine]: '30-39',
   [AgeRange.FortyToFortyNine]: '40-49',
   [AgeRange.FiftyToSixtySeven]: '50-67',
-  [AgeRange.All]: "All",
 }
 
 
@@ -113,6 +113,6 @@ export class PredictRequest {
     public gender: string,
     public age_ranges: string[],
     public adhd_type: string,
-    public include_controls: boolean
+    public with_controls: boolean
   ){}
 }

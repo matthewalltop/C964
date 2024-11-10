@@ -53,7 +53,11 @@ pub struct MentalHealthParams {
 
 #[derive(Debug, Deserialize)]
 pub struct PredictParams {
+    pub(crate) condition: Option<String>,
     pub(crate) gender: Option<String>,
+    pub(crate) age_ranges: Option<Vec<String>>,
+    pub(crate) adhd_type: Option<String>,
+    pub(crate) with_controls: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -90,6 +94,7 @@ pub enum MentalHealthCategory {
     HasAnxiety = 4,
     HasSubstanceAbuseDisorder = 5,
     HasOther = 6,
+    All = 7
 }
 
 impl fmt::Display for MentalHealthCategory {
@@ -103,6 +108,7 @@ impl FromStr for MentalHealthCategory {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
+            "all" => Ok(MentalHealthCategory::All),
             "hascomorbidmentalhealthcondition" => Ok(MentalHealthCategory::HasCoMorbidMentalHealthCondition),
             "hasbipolardisorder" => Ok(MentalHealthCategory::HasBipolarDisorder),
             "hasunipolardepression" => Ok(MentalHealthCategory::HasUnipolarDepression),

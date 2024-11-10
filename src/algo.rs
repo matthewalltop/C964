@@ -4,7 +4,7 @@ use linfa_logistic::LogisticRegression;
 use ndarray::{s, ArrayBase, Dim, OwnedRepr};
 use polars::frame::DataFrame;
 use polars::prelude::{Float64Type, IndexOrder};
-
+use serde::{Deserialize, Serialize};
 
 /// Applies logistic regression to the provided dataset
 pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
@@ -128,9 +128,11 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split
 
 
     let cf_matrix = create_cf_matrix(&train, &test);
+    
+    println!("{:?}", cf_matrix);
+    
     Ok(MLAlgorithmResponse::new(cf_matrix, None, None))
 }
-
 
 pub struct MLAlgorithmResponse {
     pub cf_matrix: ConfusionMatrix<&'static str>,

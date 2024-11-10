@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <div class="column is-2">
+  <div *ngIf="visualization !== 'Table'" class="column is-2">
     <label for="explore-category-select" class="label has-text-white">Sub-Category</label>
     <div class="select is-normal is-info">
       <ng-container *ngIf="category$ | async as currentCategory">
