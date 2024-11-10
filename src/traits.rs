@@ -23,6 +23,7 @@ pub trait PatientInfoFilter {
 }
 
 pub trait PatientInfoSelection {
+    fn select_has_mental_illness_column(&mut self) -> Self;
     fn select_default_patient_info_columns(&mut self) -> Self;
     fn select_patient_info_columns(&mut self, fields: Vec<&str>) -> Self;
 }
@@ -189,6 +190,24 @@ impl PatientInfoFilter for LazyFrame {
 }
 
 impl PatientInfoSelection for LazyFrame {
+    fn select_has_mental_illness_column(&mut self) -> Self {
+        self.deref().clone()
+            .with_column(
+                when(
+                    col("BIPOLAR").eq(1)
+                        .or(col("UNIPOLAR").eq(1))
+                        .or(col("ANXIETY").eq(1))
+                        .or(col("SUBSTANCE").eq(1))
+                        .or(col("OTHER").eq(1))
+                ).then(
+                    lit(1)
+                ).otherwise(
+                    lit(0)
+                )
+                    .alias("MENTAL_ILLNESS")
+            )
+    }
+
     fn select_default_patient_info_columns(&mut self) -> Self {
         self.deref().clone().select(
             [

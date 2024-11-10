@@ -79,6 +79,8 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
         // Reset the threshold for the next run.
         curr_threshold = 0.02;
     }
+    
+    println!("{:?}", best_cf_matrix);
 
     Ok(MLAlgorithmResponse::new(best_cf_matrix, Some(best_threshold), Some(best_iterations)))
 }
@@ -221,6 +223,4 @@ mod test {
         println!("Precision {}", result.precision);
         println!("Recall {}", result.recall);
     }
-
-
 }

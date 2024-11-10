@@ -50,19 +50,3 @@ async fn root () -> &'static str {
     // TODO: Redirect to frontend URI.
     "Hello World!"
 }
-
-
-/* Design and develop your fully functional data product that addresses your identified business problem or organizational need from part A. Include each of the following attributes, as they are the minimum required elements for the product:
-
-- [x]  collected or available datasets
-- [x]  ability to support featurizing, parsing, cleaning, and wrangling datasets
-- [x]  methods and algorithms supporting data exploration and preparation
-- [x]   data visualization functionalities for data exploration and inspection
-- [x]  implementation of machine-learning methods and algorithms
-- [x]  functionalities to evaluate the accuracy of the data product
-- [x]  implementation of interactive queries
-- [x]  a user-friendly, functional dashboard that includes three visualization types 
-- []  decision support functionality
-- []  industry-appropriate security features
-- []  tools to monitor and maintain the product 
-- []  one descriptive method and one non-descriptive (predictive or prescriptive) method */

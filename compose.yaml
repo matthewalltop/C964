@@ -14,6 +14,13 @@ services:
       target: final
     ports:
       - 3000:3000
+  
+  web:
+    build:
+        context: ./web
+        target: final
+    ports:
+      - 4200:4200
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

@@ -15,6 +15,8 @@
 **/.toolstarget
 **/.vs
 **/.vscode
+**/.next
+**/.cache
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
@@ -24,8 +26,11 @@
 **/Dockerfile*
 **/node_modules
 **/npm-debug.log
+**/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+**/build
+**/dist
 /bin
 /target
 LICENSE
