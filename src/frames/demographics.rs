@@ -2,10 +2,11 @@
 use polars::prelude::col;
 use crate::enums::AdhdSubtype;
 use crate::frames::get_all_patient_info_raw;
+use crate::JsonResponse;
 use crate::traits::{PatientInfoFilter, PatientInfoTranslation};
 
 /// Returns filtered data frame containing filtered ADHD Subtype info.
-pub fn adhd_subtype_info(with_controls: bool) -> Result<String, Box<dyn Error>> {
+pub fn adhd_subtype_info(with_controls: bool) -> JsonResponse {
     let df = get_all_patient_info_raw(with_controls)
         .with_adhd(Some(AdhdSubtype::All))
         .with_gender_translation()

@@ -51,7 +51,7 @@ pub struct MentalHealthParams {
     pub(crate) with_controls: Option<bool>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 pub struct PredictParams {
     pub(crate) condition: Option<String>,
     pub(crate) gender: Option<String>,

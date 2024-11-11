@@ -1,5 +1,4 @@
-﻿use error::Error;
-use std::error;
+﻿use std::error;
 use plotlars::{Axis, AxisType, BarPlot, HeatMap, Plot, Text};
 use polars::prelude::{col, lit, DataType, SortMultipleOptions};
 use crate::enums::{AdhdSubtype, Age, Gender};
