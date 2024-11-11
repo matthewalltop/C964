@@ -1,5 +1,4 @@
-﻿use std::ops::{Add, Div};
-use plotlars::{Axis, AxisType, BarPlot, Histogram, Plot, Rgb, Scatter3dPlot, Text};
+﻿use plotlars::{Axis, Histogram, Plot, Rgb, Text};
 use polars::prelude::{col, lit, when, DataType};
 use crate::enums::{AdhdSubtype, MentalHealthCondition};
 use crate::frames::{get_all_patient_info_raw};
@@ -62,18 +61,6 @@ pub fn plot_comorbid_mental_health_conditions(with_controls: bool) -> JsonRespon
         .to_json();
 
     Ok(plot.unwrap())
-}
-
-pub fn plot_occurrence_of_mental_illness(condition: MentalHealthCondition, with_controls: bool) -> JsonResponse {
-    let df = get_all_patient_info_raw(with_controls)
-        .with_presence_of_given_mental_health_condition(condition)
-        .with_age_range_translation()
-        .with_adhd_type_translation()
-        .with_gender_translation()
-        // .group_by([])
-        .collect()?;
-
-    Ok("".into())
 }
 
 #[cfg(test)]

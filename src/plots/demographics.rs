@@ -1,13 +1,14 @@
 ﻿use error::Error;
 use std::error;
 use plotlars::{Axis, AxisType, BarPlot, HeatMap, Plot, Text};
-use polars::prelude::{col, lit, when, DataType, SortMultipleOptions};
+use polars::prelude::{col, lit, DataType, SortMultipleOptions};
 use crate::enums::{AdhdSubtype, Age, Gender};
 use crate::frames::{get_all_patient_info_raw};
+use crate::JsonResponse;
 use crate::traits::PatientInfoTranslation;
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
-pub fn heat_map_adhd_type_by_age_group(with_controls: bool) -> Result<String, Box<dyn Error>> {
+pub fn heat_map_adhd_type_by_age_group(with_controls: bool) -> JsonResponse {
     let df = 
         get_all_patient_info_raw(with_controls)
             .with_adhd_type_translation()
@@ -49,7 +50,7 @@ pub fn heat_map_adhd_type_by_age_group(with_controls: bool) -> Result<String, Bo
 }
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
-pub fn bar_plot_adhd_type_by_age_range(with_controls: bool) -> Result<String, Box<dyn Error>> {
+pub fn bar_plot_adhd_type_by_age_range(with_controls: bool) -> JsonResponse {
     let df = {
         let control_filter = if  with_controls { lit(true) } else { col("ADHD Type").neq(lit("N/A"))  };
 
@@ -105,13 +106,8 @@ pub fn bar_plot_adhd_type_by_age_range(with_controls: bool) -> Result<String, Bo
 
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
-pub fn plot_adhd_type_by_gender(gender: Option<Gender>, with_controls: bool) -> Result<String, Box<dyn Error>> {
-    let df = {
-        let gender_filter = match  gender {
-            Some(g) => col("Gender").eq(lit(g.to_string())),
-            None => lit(true)
-        };
-        
+pub fn plot_adhd_type_by_gender(gender: Option<Gender>, with_controls: bool) -> JsonResponse {
+    let df = 
         get_all_patient_info_raw(with_controls)
             .with_adhd_type_translation()
             .with_gender_translation()
@@ -126,11 +122,8 @@ pub fn plot_adhd_type_by_gender(gender: Option<Gender>, with_controls: bool) -> 
                 col("ADHD Type"),
                 col("ADHD Subtypes")
             ])
-            .collect()
-    }?;
+            .collect()?;
     
-    println!("{}", &df);
-
     let plots = BarPlot::builder()
         .data(&df)
         .group("Gender")

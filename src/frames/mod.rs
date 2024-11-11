@@ -1,6 +1,6 @@
 ﻿use polars::prelude::{LazyFrame};
 use crate::frames::hyperaktiv::load_patient_info;
-use crate::traits::{PatientInfoFilter, PatientInfoSelection, PatientInfoTranslation};
+use crate::traits::{PatientInfoFilter, PatientInfoTranslation};
 
 /// This module exposes the raw hyperaktiv dataset
 mod hyperaktiv;
@@ -16,7 +16,6 @@ pub fn get_all_patient_info_clean(with_controls: bool) -> LazyFrame {
         .with_adhd_type_translation()
         .with_gender_translation()
         .with_age_range_translation()
-        .select_default_patient_info_columns()
 }
 
 /// Returns full, untranslated, unfiltered Hyperaktiv patient info data 

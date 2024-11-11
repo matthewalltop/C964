@@ -4,9 +4,10 @@ use linfa_logistic::LogisticRegression;
 use ndarray::{s, ArrayBase, Dim, OwnedRepr};
 use polars::frame::DataFrame;
 use polars::prelude::{Float64Type, IndexOrder};
+use crate::predict::MLResponse;
 
 /// Applies logistic regression to the provided dataset
-pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
+pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> MLResponse {
     // Convert the data frame to a 2D array to prepare it for logistic regression.
     let feature_array = df.to_ndarray::<Float64Type>(IndexOrder::C)?;
 
@@ -86,7 +87,7 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
 
 
 /// Applies Gaussian Naive Bayes Algorithm
-pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> Result<MLAlgorithmResponse, Box<dyn std::error::Error>> {
+pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> MLResponse {
     // Convert the data frame to a 2D array to prepare it for logistic regression.
     let feature_array = df.to_ndarray::<Float64Type>(IndexOrder::C)?;
 
