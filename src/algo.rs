@@ -6,6 +6,11 @@ use polars::frame::DataFrame;
 use polars::prelude::{Float64Type, IndexOrder};
 use crate::predict::MLResponse;
 
+type MLDataset = DatasetBase<
+    ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
+    ArrayBase<OwnedRepr<&'static str>, Dim<[usize; 1]>>
+>;
+
 /// Applies logistic regression to the provided dataset
 pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> MLResponse {
     // Convert the data frame to a 2D array to prepare it for logistic regression.
@@ -27,17 +32,12 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
     // Internal closure method to generate a confusion matrix.
     // Each of these algorithms operates differently and this is specific to Logistic Regression, only.
     let create_cf_matrix = |
-        train: &DatasetBase<
-            ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
-            ArrayBase<OwnedRepr<&'static str>, Dim<[usize; 1]>>,
-        >,
-        test: &DatasetBase<
-            ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
-            ArrayBase<OwnedRepr<&'static str>, Dim<[usize; 1]>>,
-        >,
+        train: &MLDataset,
+        test: &MLDataset,
         threshold: f64,
         max_iterations: u64| -> ConfusionMatrix<&'static str> {
 
+        // Fit the logistic regression model to the training dataset.
         let model = LogisticRegression::default()
             .max_iterations(max_iterations)
             .fit(train)
@@ -45,9 +45,8 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
 
         // Predict
         let predict = model.set_threshold(threshold).predict(test);
-
         
-
+        // Validate
         predict
             .confusion_matrix(test)
             .expect("Can create a confusion matrix")
@@ -104,25 +103,16 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&str>, split
         .with_feature_names(feature_names)
         .split_with_ratio(split_ratio);
 
-    let create_cf_matrix = |
-        train: &DatasetBase<
-            ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
-            ArrayBase<OwnedRepr<&'static str>, Dim<[usize; 1]>>,
-        >,
-        test: &DatasetBase<
-            ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
-            ArrayBase<OwnedRepr<&'static str>, Dim<[usize; 1]>>,
-        >| -> ConfusionMatrix<&'static str> {
-
+    let create_cf_matrix = | train: &MLDataset, test: &MLDataset| -> ConfusionMatrix<&'static str> {
+        // Fit the GNB model to the training dataset.
         let model = GaussianNb::params()
             .fit(train)
             .unwrap();
 
         // Predict
         let predict = model.predict(test);
-
         
-
+        // Validate
         predict
             .confusion_matrix(test)
             .expect("Can create a confusion matrix")
