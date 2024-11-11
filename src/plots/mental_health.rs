@@ -1,47 +1,67 @@
-﻿use std::ops::Div;
-use polars::prelude::{as_struct, col, lit, when, Expr};
-use crate::enums::MentalHealthCondition;
+﻿use std::ops::{Add, Div};
+use plotlars::{Axis, AxisType, BarPlot, Histogram, Plot, Rgb, Scatter3dPlot, Text};
+use polars::prelude::{col, lit, when, DataType};
+use crate::enums::{AdhdSubtype, MentalHealthCondition};
 use crate::frames::{get_all_patient_info_raw};
 use crate::JsonResponse;
 use crate::traits::{PatientInfoFilter, PatientInfoTranslation};
 
 pub fn plot_comorbid_mental_health_conditions(with_controls: bool) -> JsonResponse {
     let df = get_all_patient_info_raw(with_controls)
-        .with_age_range_translation()
+        .with_adhd(Some(AdhdSubtype::All))
         .with_adhd_type_translation()
         .with_gender_translation()
         .with_column(
-            when(as_struct(vec![col("BIPOLAR"), col("UNIPOLAR"), col("ANXIETY"), col("SUBSTANCE"), col("OTHER")]).sum().gt(1)).then(6)
-                .when(col("BIPOLAR").eq(1)).then(lit(1))
+            when(
+                col("BIPOLAR").eq(1)).then(lit(1))
                 .when(col("UNIPOLAR").eq(1)).then(lit(2))
                 .when(col("ANXIETY").eq(1)).then(lit(3))
                 .when(col("SUBSTANCE").eq(1)).then(lit(4))
                 .when(col("OTHER").eq(1)).then(lit(5))
-                .otherwise(0)
+                .otherwise(lit(0))
                 .alias("Mental Illness Type")
         )
         .select([
-            col("Gender"),
             col("ADHD Type"),
-            col("Mental Illness Type"),
-            col("Age Range"),
+            col("Mental Illness Type").cast(DataType::Float32),
         ])
         .collect()?;
 
-    // DEBUG
-    println!("{}", df);
+    let plot = Histogram::builder()
+        .data(&df)
+        .x("Mental Illness Type")
+        .group("ADHD Type")
+        .legend_title(
+            Text::from("ADHD Type")
+        )
+        .y_axis(&Axis::new()
+            .show_axis(true)
+            .show_grid(true)
+            .show_line(true)
+            .value_thousands(true)
+            .tick_values(vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0])
+        )
+        .x_axis(&Axis::new()
+            .show_grid(true)
+            .show_axis(true)
+            .show_line(true)
+            .value_thousands(true)
+            .tick_values(vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
+            .tick_labels(vec![MentalHealthCondition::None.to_string(), MentalHealthCondition::BipolarDisorder.to_string(), MentalHealthCondition::UnipolarDepression.to_string(), MentalHealthCondition::AnxietyDisorder.to_string(), MentalHealthCondition::SubstanceAbuseDisorder.to_string(), MentalHealthCondition::Other.to_string()]))
+        .y_title("Total Patients")
+        .x_title("Mental Health Condition")
+        .colors(
+            vec![
+                Rgb(9, 74, 77),
+                Rgb(112, 228, 76),
+                Rgb(55, 57, 58),
+            ]
+        )
+        .plot_title("Distribution of Mental Health Conditions")
+        .build()
+        .to_json();
 
-    // let response = Histogram::builder()
-    //     .data(&df)
-    //     .group("ADHD Type")
-    //     .x("")
-    //     .values("Total Patients")
-    //     .build();
-    // 
-    // 
-
-
-    Ok("".into())
+    Ok(plot.unwrap())
 }
 
 pub fn plot_occurrence_of_mental_illness(condition: MentalHealthCondition, with_controls: bool) -> JsonResponse {
@@ -54,25 +74,6 @@ pub fn plot_occurrence_of_mental_illness(condition: MentalHealthCondition, with_
         .collect()?;
 
     Ok("".into())
-}
-
-fn calculate_total_patients() -> Expr {
-    col("ID")
-        .count()
-        .alias("Total Patients")
-}
-
-fn calculate_representation_vs_total(condition: &str) -> Expr {
-    calculate_occurrence(condition)
-        .div(calculate_total_patients())
-        .alias("Occurrence as %")
-}
-
-
-fn calculate_occurrence(condition: &str) -> Expr {
-    col(condition).eq(1)
-        .sum()
-        .alias(format!("{}_SUM", condition))
 }
 
 #[cfg(test)]

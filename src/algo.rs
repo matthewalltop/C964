@@ -17,7 +17,7 @@ pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&str>, split_
         feature_array.column(2).to_owned()
     );
 
-    // Create the training & test dataset - we'll split the training set off as 20% of the original training set.
+    // Create the training & test dataset
     let (train, test) = DatasetBase::new(features, targets)
         .map_targets(|x| if *x as u32 == 1 { "Positive" } else { "Negative" })
         .with_feature_names(feature_names)

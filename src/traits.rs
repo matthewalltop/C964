@@ -57,7 +57,7 @@ impl PatientInfoTranslation for LazyFrame {
 
                     .and(col("ADD").eq(0))
             ).then(
-                lit("N/A")
+                lit(AdhdSubtype::None.to_string())
             ).otherwise(lit("ADHD-PH"))
                 .alias("ADHD Type")
         )

@@ -106,6 +106,7 @@ export class ExploreComponent {
       this.agGridData$.next(res);
     });
     this.toggleTable();
+    this.changeDetector.detectChanges();
   }
 
   private updateMentalHealthPlotData(subCategory: string, includeControls: boolean) {
@@ -114,6 +115,7 @@ export class ExploreComponent {
       this.plotlyData$.next(res);
     });
     this.togglePlot();
+    this.changeDetector.detectChanges();
   }
 
   private detachComponent(graphOrTable: string) {
