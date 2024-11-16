@@ -6,6 +6,8 @@ import {
   AdhdTypeMapping,
   AgeRange,
   AgeRangeMapping,
+  Algorithm,
+  AlgorithmMapping,
   Gender,
   GenderMapping,
   MentalHealthCategory,
@@ -25,21 +27,21 @@ export class PredictNavBarComponent {
 
   public comorbidityCategoryMapping = MentalHealthCategoryMapping;
   public genderCategoryMapping = GenderMapping;
-  public ageRangeCategoryMapping = AgeRangeMapping;
   public adhdTypeCategoryMapping = AdhdTypeMapping;
+  public algorithmCategoryMapping = AlgorithmMapping;
 
   public comorbidityCategories = Object.values(MentalHealthCategory);
   public genderCategories = Object.values(Gender);
-  public ageRangeCategories = Object.values(AgeRange);
   public adhdTypeCategories = Object.values(AdhdType);
+  public algorithmCategories = Object.values(Algorithm);
+  public split_ratio = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
 
   // To drive dynamic controls
   public comorbidity$ = new BehaviorSubject<string>("All");
   public genderCategory$ = new BehaviorSubject<string>("All");
-  public ageRangeCategories$ = new BehaviorSubject<string[]>(["All"]);
   public adhdTypeCategory$ = new BehaviorSubject<string>("All");
-
-  public includeControlsValue = false;
+  public algorithm$ = new BehaviorSubject<string>("LogisticRegression");
+  public split_ratio$ = new BehaviorSubject<number>(0.7);
 
 
   changeComorbidity(event: any) {
@@ -52,28 +54,25 @@ export class PredictNavBarComponent {
     this.genderCategory$.next(genderSelection);
   }
 
-  changeAgeRanges(event: any) {
-    const ageRangeCategories = Array.from(event.target.selectedOptions).map((option: any) => option.value);
-    if (ageRangeCategories.includes("All")) {
-      this.ageRangeCategories$.next(["All"]);
-      return;
-    }
-    this.ageRangeCategories$.next(ageRangeCategories);
-  }
-
   changeAdhdType(event: any) {
     const adhdTypeSelection = event.target.value;
     this.adhdTypeCategory$.next(adhdTypeSelection);
   }
 
-  toggleControls() {
-    this.includeControlsValue = !this.includeControlsValue;
+  changeAlgorithm(event: any) {
+    const algorithmSelection = event.target.value;
+    this.algorithm$.next(algorithmSelection);
+  }
+
+  changeSplitRatio(event: any) {
+    const splitRatio = event.target.value;
+    this.split_ratio$.next(splitRatio);
   }
 
   submit(event: any) {
-    combineLatest([this.comorbidity$, this.genderCategory$, this.ageRangeCategories$, this.adhdTypeCategory$])
-      .subscribe(([comorbidity, gender, ageRanges, adhdType]) => {
-      this.search.emit(new PredictRequest(comorbidity, gender, ageRanges, adhdType, this.includeControlsValue));
+    combineLatest([this.comorbidity$, this.genderCategory$, this.adhdTypeCategory$, this.algorithm$, this.split_ratio$])
+      .subscribe(([comorbidity, gender, adhdType, algorithm, split_ratio]) => {
+      this.search.emit(new PredictRequest(comorbidity, gender, adhdType, algorithm, split_ratio));
     });
   }
 }

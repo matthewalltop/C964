@@ -24,18 +24,6 @@
     </div>
   </div>
 
-  <!-- Age Range Category Selection -->
-  <div class="column is-2">
-    <label for="predict-age-range-select" class="label has-text-white">Age Ranges:</label>
-    <div class="select is-multiple is-info">
-      <select multiple name="age-range-select" id="age-range-select" (change)="changeAgeRanges($event)">
-        <ng-container *ngFor="let opt of ageRangeCategories">
-          <option [value]="opt">{{ageRangeCategoryMapping[opt]}}</option>
-        </ng-container>
-      </select>
-    </div>
-  </div>
-
   <!-- ADHD Subtype Category Selection -->
   <div class="column is-2">
     <label for="predict-adhd-select" class="label has-text-white">ADHD Type</label>
@@ -48,18 +36,29 @@
     </div>
   </div>
 
-  <!-- Control Data Selection -->
+  <!-- Algorithm Selection -->
   <div class="column is-2">
-    <label for="include-control-data-radio" class="label has-text-white">Include Control Data?</label>
-    <div class="radios control is-align-content-center py-3">
-      <label class="radio">
-        <input type="radio" name="withcontrols" [checked]="includeControlsValue" (change)="toggleControls()" />
-        Yes
-      </label>
-      <label class="radio">
-        <input type="radio" name="withcontrols" [checked]="!includeControlsValue" (change)="toggleControls()" />
-        No
-      </label>
+    <label for="predict-algorithm-select" class="label has-text-white">Algorithm</label>
+    <div class="select is-normal is-info">
+      <select name="algorithm-select" id="algorithm-select" (change)="changeAlgorithm($event)">
+        <ng-container *ngFor="let opt of algorithmCategories">
+          <option [value]="opt">{{algorithmCategoryMapping[opt]}}</option>
+        </ng-container>
+      </select>
+    </div>
+  </div>
+
+  <!-- Split Ratio Selection -->
+  <div class="column is-2">
+    <label for="predict-split-ratio-select" class="label has-text-white">Train/Test Ratio</label>
+    <div class="select is-normal is-info">
+      <select name="split-ratio-select" id="split-ratio-select" (change)="changeSplitRatio($event)">
+        <ng-container *ngIf="split_ratio$ | async as sr">
+          <ng-container *ngFor="let opt of split_ratio">
+            <option [value]="opt">{{sr}}</option>
+          </ng-container>
+        </ng-container>
+      </select>
     </div>
   </div>
 

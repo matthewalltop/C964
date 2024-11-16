@@ -14,11 +14,13 @@ debug = true
 
 [dependencies]
 axum = "0.7.7"
+axum-test = "16.4.0"
 hashbrown = { version = "0.15.0", features = ["rayon", "serde"] }
 http-body-util = "0.1.2"
-linfa = { version = "0.7.0"}
+linfa = { version = "0.7.0", features = ["serde"]}
 linfa-bayes = "0.7.0"
 linfa-logistic = "0.7.0"
+linfa-trees = { version = "0.7.0", features = ["serde"]  }
 # linfa uses this version of ndarray.
 ndarray = { version = "0.15", features = ["approx"] }
 ndarray-stats = "0.5.0"

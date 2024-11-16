@@ -1,0 +1,45 @@
+
+\documentclass[margin=10pt]{standalone}
+\usepackage{tikz,forest}
+\usetikzlibrary{arrows.meta}
+\forestset{
+default preamble={
+before typesetting nodes={
+  !r.replace by={[, coordinate, append]}
+},  
+where n children=0{
+  tier=word,
+}{  
+  %diamond, aspect=2,
+},  
+where level=0{}{
+  if n=1{
+    edge label={node[pos=.2, above] {Y}},
+  }{  
+    edge label={node[pos=.2, above] {N}},
+  }   
+},  
+for tree={
+  edge+={thick, -Latex},
+  s sep'+=2cm,
+  draw,
+  thick,
+  edge path'={ (!u) -| (.parent)},
+  align=center,
+}   
+}
+}\begin{document}\begin{forest}[Val($1$) $ \leq 3.50$ \\ Imp. $0.01$
+	[Val($1$) $ \leq 2.50$ \\ Imp. $0.00$
+		[Val($1$) $ \leq 1.50$ \\ Imp. $0.01$
+			[Label: "Negative"]
+			[Val($0$) $ \leq 0.50$ \\ Imp. $0.04$
+				[Label: "Negative"]
+				[Label: "Positive"]]]
+		[Label: "Negative"]]
+	[Label: "Negative"]]
+\node [anchor=north west] at (current bounding box.north east) {%
+                \begin{tabular}{c c c}
+                  \multicolumn{3}{@{}l@{}}{Legend:}\\
+                  Imp.&:&Impurity decrease\\Var(1)&:&AGE\\Var(0)&:&SEX\\\end{tabular}};
+	\end{forest}
+\end{document}

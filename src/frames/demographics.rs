@@ -1,5 +1,4 @@
-﻿use std::error::Error;
-use polars::prelude::col;
+﻿use polars::prelude::col;
 use crate::enums::AdhdSubtype;
 use crate::frames::get_all_patient_info_raw;
 use crate::JsonResponse;

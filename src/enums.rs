@@ -97,6 +97,7 @@ pub enum MentalHealthCondition {
     AnxietyDisorder = 3,
     SubstanceAbuseDisorder = 4,
     Other = 5,
+    All = 6
 }
 
 impl fmt::Display for MentalHealthCondition {
@@ -119,10 +120,40 @@ impl FromStr for MentalHealthCondition {
             "substanceabusedisorder" => Ok(MentalHealthCondition::SubstanceAbuseDisorder),
             "substance" => Ok(MentalHealthCondition::SubstanceAbuseDisorder),
             "other" => Ok(MentalHealthCondition::Other),
-            _ => Ok(MentalHealthCondition::None)
+            _ => Ok(MentalHealthCondition::All)
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+pub enum MLAlgorithms {
+    None = 0,
+    LogisticRegression = 1,
+    GaussianNB = 2,
+    DecisionTree = 3
+}
+
+impl fmt::Display for MLAlgorithms {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Debug::fmt(self, f)
+    }
+}
+
+impl FromStr for MLAlgorithms {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "logisticregression" => Ok(MLAlgorithms::LogisticRegression),
+            "gaussiannb" => Ok(MLAlgorithms::GaussianNB),
+            "decisiontree" => Ok(MLAlgorithms::DecisionTree),
+            _ => Ok(MLAlgorithms::None)
+        }
+    }
+}
+
+
+
 
 #[cfg(test)]
 mod test {

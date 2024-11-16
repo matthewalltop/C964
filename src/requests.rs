@@ -31,7 +31,9 @@ impl FromStr for DisplayType {
 pub struct DemographicParams {
     #[serde_as(as = "NoneAsEmptyString")]
     pub(crate) display: Option<String>,
+    #[serde_as(as = "NoneAsEmptyString")]
     pub(crate) sub_category: Option<String>,
+    #[serde_as(as = "NoneAsEmptyString")]
     pub(crate) gender: Option<String>,
     pub(crate) with_controls: Option<bool>,
 }
@@ -47,17 +49,21 @@ impl fmt::Display for DemographicParams {
 pub struct MentalHealthParams {
     #[serde_as(as = "NoneAsEmptyString")]
     pub(crate) display: Option<String>,
-    pub(crate) category: Option<String>,
     pub(crate) with_controls: Option<bool>,
 }
 
-#[derive(Deserialize)]
+#[serde_as]
+#[derive(Debug, Deserialize)]
 pub struct PredictParams {
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub(crate) algorithm: Option<String>,
+    #[serde_as(as = "NoneAsEmptyString")]
     pub(crate) condition: Option<String>,
+    #[serde_as(as = "NoneAsEmptyString")]
     pub(crate) gender: Option<String>,
-    pub(crate) age_ranges: Option<Vec<String>>,
+    #[serde_as(as = "NoneAsEmptyString")]
     pub(crate) adhd_type: Option<String>,
-    pub(crate) with_controls: Option<bool>,
+    pub(crate) split_ratio: Option<f32>
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]

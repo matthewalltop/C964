@@ -88,6 +88,18 @@ export const AgeRangeMapping: Record<AgeRange, string> = {
   [AgeRange.FiftyToSixtySeven]: '50-67',
 }
 
+export enum Algorithm {
+  LogisticRegression = 'LogisticRegression',
+  GaussianNB = 'GaussianNB',
+  DecisionTree = 'DecisionTree',
+}
+
+export const AlgorithmMapping: Record<Algorithm, string> = {
+  [Algorithm.LogisticRegression]: "Logistic Regression",
+  [Algorithm.GaussianNB]: "Gaussian Naive Bayes",
+  [Algorithm.DecisionTree]: "Decision Tree",
+}
+
 
 export class DemographicsRequest {
   constructor(
@@ -111,8 +123,8 @@ export class PredictRequest {
   constructor(
     public condition: string,
     public gender: string,
-    public age_ranges: string[],
     public adhd_type: string,
-    public with_controls: boolean
+    public algorithm: string,
+    public split_ratio: number
   ){}
 }
