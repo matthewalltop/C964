@@ -32,6 +32,9 @@ importers:
       '@angular/router':
         specifier: 17.3.12
         version: 17.3.12(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@17.3.12(@angular/animations@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(rxjs@7.8.1)
+      '@creativebulma/bulma-tooltip':
+        specifier: ^1.2.0
+        version: 1.2.0
       ag-grid-angular:
         specifier: ^32.3.1
         version: 32.3.1(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(ag-grid-community@32.3.1)
@@ -53,9 +56,15 @@ importers:
       md-block:
         specifier: ^0.0.1
         version: 0.0.1
+      ng-katex:
+        specifier: ^2.0.3
+        version: 2.0.3(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@17.3.12(@angular/animations@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))
       ngx-markdown:
         specifier: 17.2.1
         version: 17.2.1(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@17.3.12(@angular/animations@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(marked@12.0.0)(rxjs@7.8.1)(zone.js@0.14.10)
+      ngx-operators:
+        specifier: ^8.0.0
+        version: 8.0.0(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))
       plotly.js-dist-min:
         specifier: ^2.35.2
         version: 2.35.2
@@ -864,6 +873,9 @@ packages:
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
+
+  '@creativebulma/bulma-tooltip@1.2.0':
+    resolution: {integrity: sha512-ooImbeXEBxf77cttbzA7X5rC5aAWm9UsXIGViFOnsqB+6M944GkB28S5R4UWRqjFd2iW4zGEkEifAU+q43pt2w==}
 
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -2368,6 +2380,9 @@ packages:
     resolution: {integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew==}
     engines: {node: '>=4'}
 
+  extract-math@1.0.5:
+    resolution: {integrity: sha512-uilrQFjtc2ghQDwax4FqKpsgUsyeD4591fKEYxAAa7NAWKqg00qvXDpiDJzG3Ae2zvDuYIE9wNJcFEG3tgNQ6g==}
+
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
@@ -2899,6 +2914,10 @@ packages:
     engines: {node: '>= 10'}
     hasBin: true
 
+  katex@0.11.1:
+    resolution: {integrity: sha512-5oANDICCTX0NqYIyAiFCCwjQ7ERu3DQG2JFHLbYOf+fXaMoH8eg/zOq5WSYJsKMi/QebW+Eh3gSM+oss1H/bww==}
+    hasBin: true
+
   katex@0.16.11:
     resolution: {integrity: sha512-RQrI8rlHY92OLf3rho/Ts8i/XvjgguEjOkO1BEXcU3N8BqPpSzBNwV/G0Ukr+P/l3ivvJUE/Fa/CwbS6HesGNQ==}
     hasBin: true
@@ -3252,6 +3271,13 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
+  ng-katex@2.0.3:
+    resolution: {integrity: sha512-ed68gPsiiKAo2UQn7vZZS97nRCrE6fSP0jYgWzb8i1kR4kMgMGF7XAAdLJr8KRMP5LmmELMWo03gyvD0HAashg==}
+    peerDependencies:
+      '@angular/common': '>=4.0.0'
+      '@angular/core': '>=4.0.0'
+      '@angular/platform-browser': '>=4.0.0'
+
   ngx-markdown@17.2.1:
     resolution: {integrity: sha512-TKzxP2R2uTGpVFx0OZDFC/BpNJYUabG2z59/9/PXrTP3R7xTNFuvGQZSNitAQFD7nI3Uko87Ra3GJrbaHdjeBA==}
     peerDependencies:
@@ -3261,6 +3287,12 @@ packages:
       marked: '>= 9.0.0 < 13.0.0'
       rxjs: ^6.5.3 || ^7.4.0
       zone.js: ~0.14.0
+
+  ngx-operators@8.0.0:
+    resolution: {integrity: sha512-vhd5JT50ksPhFWP9lfbQ+P2l8pDTEGEOMZw+4EBPL6BBk8mApfEAQLixu5D6xFozHxoJu8RdaVX0M5HgDDgcdg==}
+    peerDependencies:
+      '@angular/common': ^16.0.0
+      '@angular/core': ^16.0.0
 
   nice-napi@1.0.2:
     resolution: {integrity: sha512-px/KnJAJZf5RuBGcfD+Sp2pAKq0ytz8j+1NehvgIGFkvtvFrDM3T8E4x/JJODXK9WZow8RRGrbA9QQ3hs+pDhA==}
@@ -4083,6 +4115,9 @@ packages:
   ts-dedent@2.2.0:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
+
+  tslib@1.14.1:
+    resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
 
   tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
@@ -5472,6 +5507,8 @@ snapshots:
     optional: true
 
   '@colors/colors@1.5.0': {}
+
+  '@creativebulma/bulma-tooltip@1.2.0': {}
 
   '@discoveryjs/json-ext@0.5.7': {}
 
@@ -7070,6 +7107,8 @@ snapshots:
       iconv-lite: 0.4.24
       tmp: 0.0.33
 
+  extract-math@1.0.5: {}
+
   fast-deep-equal@3.1.3: {}
 
   fast-glob@3.3.2:
@@ -7626,6 +7665,10 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  katex@0.11.1:
+    dependencies:
+      commander: 2.20.3
+
   katex@0.16.11:
     dependencies:
       commander: 8.3.0
@@ -8094,6 +8137,15 @@ snapshots:
 
   neo-async@2.6.2: {}
 
+  ng-katex@2.0.3(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@17.3.12(@angular/animations@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))):
+    dependencies:
+      '@angular/common': 17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
+      '@angular/core': 17.3.12(rxjs@7.8.1)(zone.js@0.14.10)
+      '@angular/platform-browser': 17.3.12(@angular/animations@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))
+      extract-math: 1.0.5
+      katex: 0.11.1
+      tslib: 1.14.1
+
   ngx-markdown@17.2.1(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(@angular/platform-browser@17.3.12(@angular/animations@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)))(marked@12.0.0)(rxjs@7.8.1)(zone.js@0.14.10):
     dependencies:
       '@angular/common': 17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
@@ -8111,6 +8163,12 @@ snapshots:
       prismjs: 1.28.0
     transitivePeerDependencies:
       - supports-color
+
+  ngx-operators@8.0.0(@angular/common@17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10)):
+    dependencies:
+      '@angular/common': 17.3.12(@angular/core@17.3.12(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
+      '@angular/core': 17.3.12(rxjs@7.8.1)(zone.js@0.14.10)
+      tslib: 2.8.0
 
   nice-napi@1.0.2:
     dependencies:
@@ -9014,6 +9072,8 @@ snapshots:
 
   ts-dedent@2.2.0:
     optional: true
+
+  tslib@1.14.1: {}
 
   tslib@2.6.2: {}
 

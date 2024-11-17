@@ -1,7 +1,0 @@
-{
-    "layout": "{\"title\":{\"text\":\"ADHD by Gender and Age\",\"font\":{\"family\":\"\",\"size\":0,\"color\":\"rgb(0, 0, 0)\"},\"x\":0.5,\"y\":0.9},\"legend\":{\"title\":{\"text\":\"ADHD Type\",\"font\":{\"family\":\"\",\"size\":0,\"color\":\"rgb(0, 0, 0)\"},\"x\":0.5,\"y\":0.9}},\"xaxis\":{\"ticktext\":[\"SeventeenToTwentyNine\",\"ThirtyToThirtyNine\",\"FortyToFortyNine\",\"FiftyToSixtySeven\"],\"showline\":true},\"yaxis\":{\"range\":[1.0,25.0],\"separatethousands\":false,\"showline\":true},\"boxmode\":\"group\",\"barmode\":\"group\"}",
-    "data": [
-        "{\"type\":\"bar\",\"x\":[\"30-39\",\"17-29\",\"17-29\",\"40-49\",\"50-67\",\"30-39\",\"50-67\",\"40-49\"],\"y\":[14.0,6.0,15.0,13.0,7.0,9.0,6.0,10.0],\"name\":\"ADHD-PH\",\"marker\":{\"opacity\":1.0,\"size\":10}}",
-        "{\"type\":\"bar\",\"x\":[\"50-67\",\"17-29\",\"40-49\",\"30-39\",\"50-67\",\"30-39\",\"17-29\"],\"y\":[1.0,3.0,7.0,2.0,2.0,4.0,4.0],\"name\":\"ADHD-PI\",\"marker\":{\"opacity\":1.0,\"size\":10}}"
-    ]
-}

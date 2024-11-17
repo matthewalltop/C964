@@ -4,8 +4,6 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import {
   AdhdType,
   AdhdTypeMapping,
-  AgeRange,
-  AgeRangeMapping,
   Algorithm,
   AlgorithmMapping,
   Gender,
@@ -41,7 +39,7 @@ export class PredictNavBarComponent {
   public genderCategory$ = new BehaviorSubject<string>("All");
   public adhdTypeCategory$ = new BehaviorSubject<string>("All");
   public algorithm$ = new BehaviorSubject<string>("LogisticRegression");
-  public split_ratio$ = new BehaviorSubject<number>(0.7);
+  public selected_split_ratio$ = new BehaviorSubject<number>(0.7);
 
 
   changeComorbidity(event: any) {
@@ -66,13 +64,14 @@ export class PredictNavBarComponent {
 
   changeSplitRatio(event: any) {
     const splitRatio = event.target.value;
-    this.split_ratio$.next(splitRatio);
+    this.selected_split_ratio$.next(splitRatio);
   }
 
   submit(event: any) {
-    combineLatest([this.comorbidity$, this.genderCategory$, this.adhdTypeCategory$, this.algorithm$, this.split_ratio$])
+    event.preventDefault();
+    combineLatest([this.comorbidity$, this.genderCategory$, this.adhdTypeCategory$, this.algorithm$, this.selected_split_ratio$])
       .subscribe(([comorbidity, gender, adhdType, algorithm, split_ratio]) => {
       this.search.emit(new PredictRequest(comorbidity, gender, adhdType, algorithm, split_ratio));
-    });
+    }).unsubscribe();
   }
 }

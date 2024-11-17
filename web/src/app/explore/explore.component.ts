@@ -3,16 +3,18 @@ import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@a
 import { AgGridModule } from 'ag-grid-angular';
 import { PlotlyModule } from 'angular-plotly.js';
 import { ExploreDataService } from '@services/explore-data.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, finalize, Subscription } from 'rxjs';
 import { PlotlyResponse, TableData } from '@models/responses';
 import { ExploreNavBarComponent } from './explore-nav-bar/explore-nav-bar.component';
 import { DemographicCategory, DemographicsRequest, MentalHealthCategory, MentalHealthRequest } from '@models/requests';
 import { GridComponent } from '@shared/grid/grid.component';
+import { indicate } from 'ngx-operators';
+import { AsWordsPipe } from '@shared/as-words.pipe';
 
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, AgGridModule, PlotlyModule, ExploreNavBarComponent, GridComponent],
+  imports: [CommonModule, AgGridModule, PlotlyModule, ExploreNavBarComponent, GridComponent, AsWordsPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [ExploreDataService],
   templateUrl: './explore.component.html',
@@ -22,9 +24,13 @@ export class ExploreComponent {
 
   private dataService = inject(ExploreDataService);
 
+  loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
   public selectedCategory$: BehaviorSubject<string> = new BehaviorSubject<string>('Demographics');
+  public selectedSubCategory$: BehaviorSubject<string> = new BehaviorSubject<string>('ADHDSubtypesByAgeGroup');
   public selectedVisualization$: BehaviorSubject<string> = new BehaviorSubject<string>('Graph');
   public categorySubscription$: Subscription | undefined;
+  public subCategorySubscription$: Subscription | undefined;
 
   public plotlyData$: BehaviorSubject<PlotlyResponse | null> = new BehaviorSubject<PlotlyResponse | null>(null);
   public agGridData$: BehaviorSubject<TableData | null> = new BehaviorSubject<TableData | null>(null);
@@ -47,11 +53,21 @@ export class ExploreComponent {
         this.updateMentalHealthTableData(MentalHealthCategory.All, false);
       }
     });
+
+    this.subCategorySubscription$ =
+      combineLatest([this.selectedCategory$, this.selectedSubCategory$])
+      .subscribe(([category, subCategory]) => {
+        if (category === 'Demographics') {
+          this.updateDemographicsPlotData(subCategory as DemographicCategory, false);
+        }
+      });
   }
 
   ngOnDestroy() {
     this.categorySubscription$?.unsubscribe();
+    this.subCategorySubscription$?.unsubscribe();
     this.selectedCategory$.complete();
+    this.selectedSubCategory$.complete();
     this.selectedVisualization$.complete();
   }
 
@@ -62,6 +78,10 @@ export class ExploreComponent {
 
   onCategoryChanged($event: string) {
     this.selectedCategory$.next($event);
+  }
+
+  onSubCategoryChanged($event: string) {
+    this.selectedSubCategory$.next($event);
   }
 
   submit($event: DemographicsRequest | MentalHealthRequest) {
@@ -94,7 +114,11 @@ export class ExploreComponent {
 
   private updateDemographicsPlotData(subCategory: string, includeControls: boolean) {
     this.detachComponent('Graph');
-    this.dataService.plotDemographics$(subCategory, '', includeControls).subscribe((res) => {
+    this.dataService.plotDemographics$(subCategory, '', includeControls)
+      .pipe(
+        indicate(this.loading$),
+        finalize(() => this.loading$.next(false))
+      ).subscribe((res) => {
       this.plotlyData$.next(res);
     });
     this.togglePlot();
@@ -102,7 +126,10 @@ export class ExploreComponent {
 
   private updateMentalHealthTableData(subCategory: string, includeControls: boolean) {
     this.detachComponent('Table');
-    this.dataService.getMentalHealthTableData$(subCategory, '', includeControls).subscribe((res) => {
+    this.dataService.getMentalHealthTableData$(subCategory, '', includeControls).pipe(
+        indicate(this.loading$),
+        finalize(() => this.loading$.next(false))
+      ).subscribe((res) => {
       this.agGridData$.next(res);
     });
     this.toggleTable();
@@ -111,7 +138,10 @@ export class ExploreComponent {
 
   private updateMentalHealthPlotData(subCategory: string, includeControls: boolean) {
     this.detachComponent('Graph');
-    this.dataService.plotMentalHealth$(subCategory, '', includeControls).subscribe((res) => {
+    this.dataService.plotMentalHealth$(subCategory, '', includeControls).pipe(
+        indicate(this.loading$),
+        finalize(() => this.loading$.next(false))
+      ).subscribe((res) => {
       this.plotlyData$.next(res);
     });
     this.togglePlot();

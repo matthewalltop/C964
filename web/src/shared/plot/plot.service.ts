@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { environment } from '@environment/environment';
 import { map, Observable, tap } from 'rxjs';
-import { PlotlyResponse } from '../../models/responses';
+import { PlotlyResponse } from '@models/responses';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 const baseUrl = environment.api.base;

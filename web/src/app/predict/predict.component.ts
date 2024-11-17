@@ -4,11 +4,15 @@ import { PredictService } from '@services/predict.service';
 import { PredictNavBarComponent } from "./predict-nav-bar/predict-nav-bar.component";
 import { PredictRequest } from '@models/requests';
 import { PlotlyModule } from 'angular-plotly.js';
+import { BehaviorSubject, finalize, tap } from 'rxjs';
+import { ConfusionMatrix, MLResponse } from '@models/responses';
+import { indicate } from 'ngx-operators';
+import { AsWordsPipe } from '@shared/as-words.pipe';
 
 @Component({
   selector: 'app-predict',
   standalone: true,
-  imports: [CommonModule, PredictNavBarComponent, PlotlyModule],
+  imports: [CommonModule, PredictNavBarComponent, PlotlyModule, AsWordsPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [PredictService],
   templateUrl: './predict.component.html',
@@ -17,46 +21,47 @@ import { PlotlyModule } from 'angular-plotly.js';
 export class PredictComponent {
   public predictSvc = inject(PredictService);
 
-  public tikz: string = `
-\\documentclass[margin=10pt]{standalone}
-\\usepackage{tikz,forest}
-\\usetikzlibrary{arrows.meta}
-\\forestset{
-default preamble={
-before typesetting nodes={
-  !r.replace by={[, coordinate, append]}
-},
-where n children=0{
-  tier=word,
-}{
-  %diamond, aspect=2,
-},
-where level=0{}{
-  if n=1{
-    edge label={node[pos=.2, above] {Y}},
-  }{
-    edge label={node[pos=.2, above] {N}},
-  }
-},
-for tree={
-  edge+={thick, -Latex},
-  s sep'+=2cm,
-  draw,
-  thick,
-  edge path'={ (!u) -| (.parent)},
-  align=center,
-}
-}
-}\\begin{document}\\begin{forest}[Label: "Negative"]
-\\node [anchor=north west] at (current bounding box.north east) {%
-                \\begin{tabular}{c c c}
-                  \\multicolumn{3}{@{}l@{}}{Legend:}\\
-                  Imp.&:&Impurity decrease\\\end{tabular}};
-	\\end{forest}
-\\end{document}`
+  loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  predictRequest$: BehaviorSubject<PredictRequest | null> = new BehaviorSubject<PredictRequest | null>(null);
+  predictResponse$: BehaviorSubject<MLResponse | null> = new BehaviorSubject<MLResponse | null>(null);
+  cf_matrix$: BehaviorSubject<ConfusionMatrix | null> = new BehaviorSubject<ConfusionMatrix | null>(null);
 
-  submit(event: PredictRequest) {
-    console.log(event);
+  submit(request: PredictRequest) {
+    this.predictSvc.make_prediction(request)
+      .pipe(
+        tap(() => this.predictRequest$.next(request)),
+        indicate(this.loading$),
+        finalize(() => this.loading$.next(false))
+      )
+      .subscribe((res) => {
+        this.predictResponse$.next(res);
+
+        let cf = this.create_cf_matrix(res.cf_matrix);
+        this.cf_matrix$.next(cf);
+    });
   }
+
+  create_cf_matrix(res: string): ConfusionMatrix {
+    let cf = res.split('\n');
+
+    // The first line in the response is always empty.
+    let headerRow: string[] = [],
+      rows: string[][] = [];
+
+    for (let i = 1; i < cf.length; i++) {
+      let row = cf[i].split('|').map((x) => x.replace(',', '').trim());
+      if (i === 1) {
+        headerRow = row;
+      } else {
+        rows.push(row);
+      }
+    }
+
+    return {
+      headerRow,
+      rows
+    }
+  }
+
 }

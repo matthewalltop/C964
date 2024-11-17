@@ -11,31 +11,21 @@
     </div>
   </div>
 
-  <div *ngIf="visualization !== 'Table'" class="column is-2">
-    <label for="explore-category-select" class="label has-text-white">Sub-Category</label>
-    <div class="select is-normal is-info">
-      <ng-container *ngIf="category$ | async as currentCategory">
-        @if(currentCategory === 'Demographics') {
-
+  <ng-container *ngIf="category$ | async as currentCategory">
+    @if(currentCategory === 'Demographics') {
+    <div *ngIf="visualization !== 'Table'" class="column is-2">
+      <label for="explore-category-select" class="label has-text-white">Sub-Category</label>
+      <div class="select is-normal is-info">
         <select name="explore-category-demo-select" id="explore-category-demo-select"
           (change)="changeSubCategory($event)">
           <ng-container *ngFor="let opt of demographicSubCateories">
             <option [value]="opt">{{demographicCategoryMapping[opt]}}</option>
           </ng-container>
         </select>
-
-        } @else {
-
-        <select name="explore-category-mh-select" id="explore-category-mh-select" (change)="changeSubCategory($event)">
-          <ng-container *ngFor="let opt of mentalHealthSubCategories">
-            <option [value]="opt">{{mentalHealthCategoryMapping[opt]}}</option>
-          </ng-container>
-        </select>
-
-        }
-      </ng-container>
+      </div>
     </div>
-  </div>
+    }
+  </ng-container>
 
   <div class="column is-2">
     <label for="explore-category-select" class="label has-text-white">Visual Format</label>
@@ -63,11 +53,11 @@
     </div>
   </div>
 
-  <div class="column is-2"></div>
+  <!-- <div class="column is-2"></div> -->
 
-  <div class="column is-2 is-align-content-right">
+  <div class="column is-2 is-offset is-align-content-right">
     <div class="is-align-content-center pt-5">
-      <button class="button is-success" (click)="submit($event)">Fetch Data</button>
+      <button class="button is-success" (click)="submit($event)">Refresh</button>
     </div>
   </div>
 

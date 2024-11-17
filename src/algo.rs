@@ -1,6 +1,4 @@
 ﻿use std::error::Error;
-use std::fs::File;
-use std::io::Write;
 use linfa::Dataset;
 use linfa::prelude::{ConfusionMatrix, DatasetBase, Fit, Predict, ToConfusionMatrix};
 use linfa_bayes::GaussianNb;
@@ -10,6 +8,7 @@ use ndarray::{s, ArrayBase, Dim, Ix1, OwnedRepr};
 use polars::frame::DataFrame;
 use polars::prelude::{Float64Type, IndexOrder};
 use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, NoneAsEmptyString};
 use crate::predict::MLResponse;
 
 type MLDataset = DatasetBase<
@@ -17,24 +16,58 @@ type MLDataset = DatasetBase<
     ArrayBase<OwnedRepr<&'static str>, Dim<[usize; 1]>>
 >;
 
+#[serde_as]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MLAlgorithmResponse {
+    pub cf_matrix: String,
+    pub accuracy: f32,
+    pub precision: f32,
+    pub recall: f32,
+    pub threshold: Option<f64>,
+    pub iterations: Option<u64>,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub tikz: Option<String>
+}
+
+
+impl MLAlgorithmResponse {
+    pub fn new(
+        cf_matrix: ConfusionMatrix<&'static str>,
+        threshold: Option<f64>,
+        iterations: Option<u64>) -> MLAlgorithmResponse {
+        
+        let matrix = cf_matrix.to_owned();
+        let accuracy = matrix.accuracy();
+        let precision = matrix.precision();
+        let recall = matrix.recall();
+
+        Self {
+            cf_matrix: format!("{:?}", matrix),
+            accuracy,
+            precision,
+            recall,
+            threshold,
+            iterations,
+            tikz: None
+        }
+    }
+    
+    pub fn with_tikz(&mut self, tikz: &str) -> Self {
+        Self {
+            cf_matrix: self.cf_matrix.to_owned(),
+            accuracy: self.accuracy,
+            precision: self.precision,
+            recall: self.recall,
+            threshold: self.threshold,
+            iterations: self.iterations,
+            tikz: Some(tikz.to_string())
+        }
+    }
+}
+
 /// Applies logistic regression to the provided dataset
 pub fn apply_logistic_regression(df: DataFrame, feature_names: Vec<&'static str>, split_ratio: f32) -> MLResponse {
-    // // Convert the data frame to a 2D array to prepare it for logistic regression.
-    // let feature_array = df.to_ndarray::<Float64Type>(IndexOrder::C)?;
-    // 
-    // // Features are the factors to evaluate a positive/negative result for the target value.
-    // // Targets are the success/failure criteria.
-    // let (features, targets) = (
-    //     feature_array.slice(s![.., 0..2]).to_owned(),
-    //     feature_array.column(2).to_owned()
-    // );
-    // 
-    // // Create the training & test dataset
-    // let (train, test) = DatasetBase::new(features, targets)
-    //     .map_targets(|x| if *x as u32 == 1 { "Positive" } else { "Negative" })
-    //     .with_feature_names(feature_names)
-    //     .split_with_ratio(split_ratio);
-    
+
     let (train, test) = create_datasets(df, feature_names, split_ratio)?;
 
     // Internal closure method to generate a confusion matrix.
@@ -175,21 +208,15 @@ pub fn apply_decision_tree(df: DataFrame, feature_names: Vec<&'static str>, spli
         curr_threshold = 0.02;
     }
 
-
-    let mut tikz = File::create("decision_tree_example.tex").unwrap();
-
-    tikz.write_all(
-        best_cf_matrix.0
+    
+    let response = MLAlgorithmResponse::new(best_cf_matrix.1, Some(best_threshold), Some(best_depth as u64))
+        .with_tikz(&best_cf_matrix.0
             .export_to_tikz()
             .with_legend()
             .complete(true)
-            .to_string()
-            .as_bytes()
-    )?;
-
-    println!("{:?}", best_cf_matrix.1);
-
-    Ok(MLAlgorithmResponse::new(best_cf_matrix.1, Some(best_threshold), Some(best_depth as u64)))
+            .to_string());
+    
+    Ok(response)
 }
 
 fn create_datasets(data_frame: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> Result<(Dataset<f64, &str, Ix1>, Dataset<f64, &str, Ix1>), Box<dyn Error>> {
@@ -200,7 +227,7 @@ fn create_datasets(data_frame: DataFrame, feature_names: Vec<&str>, split_ratio:
     // Features are the factors to evaluate a positive/negative result for the target value.
     // Targets are the success/failure criteria.
     let (features, targets) = (
-    feature_array.slice(s ![.., 0..feature_len - 1]).to_owned(),
+    feature_array.slice(s ![.., 0..feature_len]).to_owned(),
     feature_array.column(feature_len).to_owned()
     );
     
@@ -212,39 +239,6 @@ fn create_datasets(data_frame: DataFrame, feature_names: Vec<&str>, split_ratio:
     
     Ok((train, test))
 }
-
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct MLAlgorithmResponse {
-    pub cf_matrix: String,
-    pub accuracy: f32,
-    pub precision: f32,
-    pub recall: f32,
-    pub threshold: Option<f64>,
-    pub iterations: Option<u64>,
-}
-
-impl MLAlgorithmResponse {
-    pub fn new(
-        cf_matrix: ConfusionMatrix<&'static str>,
-        threshold: Option<f64>,
-        iterations: Option<u64>) -> MLAlgorithmResponse {
-        let matrix = cf_matrix.to_owned();
-        let accuracy = matrix.accuracy();
-        let precision = matrix.precision();
-        let recall = matrix.recall();
-
-        Self {
-            cf_matrix: format!("{:?}", matrix),
-            accuracy,
-            precision,
-            recall,
-            threshold,
-            iterations,
-        }
-    }
-}
-
 
 #[cfg(test)]
 mod test {
@@ -267,8 +261,6 @@ mod test {
                         ))).then(lit(1)).otherwise(lit(0)).alias("MENTAL_ILLNESS")
             )
             .select([
-                col("SEX"),
-                col("AGE"),
                 col("ADHD"),
                 col("ADD"),
                 col("MENTAL_ILLNESS")
@@ -276,7 +268,7 @@ mod test {
             .collect()
             .unwrap();
 
-        let response = apply_logistic_regression(df, vec!["SEX", "AGE", "ADHD", "ADD"], 0.70);
+        let response = apply_logistic_regression(df, vec!["ADHD", "ADD"], 0.70);
         assert!(Result::is_ok(&response));
 
         let result = response.unwrap();
@@ -306,6 +298,7 @@ mod test {
         assert!(Result::is_ok(&response));
 
         let result = response.unwrap();
+        
         println!("Gaussian Naive Bayes Algorithm");
         println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Accuracy {}", result.accuracy);
@@ -339,8 +332,8 @@ mod test {
         assert!(Result::is_ok(&response));
 
         let result = response.unwrap();
+        
         println!("Decision Tree Algorithm");
-
         println!("Confusion Matrix: {:?}", result.cf_matrix);
         println!("Accuracy {}", result.accuracy);
         println!("Precision {}", result.precision);

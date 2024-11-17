@@ -30,3 +30,9 @@ For the evaluator:
 - [Linfa](https://github.com/rust-ml/linfa) is used to apply machine learning algorithms. This is standing in for Python's `scikit-learn`, in this context.
 - [Polars](https://github.com/pola-rs/polars) is used for IO & DataFrame processing. This fills the functionality `pandas` would provide in a Python environment.
 - [Plotlars](https://github.com/alceal/plotlars) is used for visualizations of data frames. Plotlars, specifically, is used to bridge functionality between the `plotly` and `polars` crates, greatly simplifying the process of converting `polars` data frames into graphical formats. This crate provides what the `matplotlib` library would in a Python environment.
+
+## Frameworks and Libraries used for Front End
+
+- [Angular](https://angular.dev/) with [Typescript](https://www.typescriptlang.org/) was used to build the frontend project, contained in the `web` folder.
+- [PlotlyJS](https://plotly.com/javascript/) is used for the visualizations. This works in conjunction with the backend Plotlars crate to show the data visually.
+- [BulmaCSS](https://bulma.io/) was used to style the application.

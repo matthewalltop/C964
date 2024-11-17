@@ -33,8 +33,6 @@ pub struct DemographicParams {
     pub(crate) display: Option<String>,
     #[serde_as(as = "NoneAsEmptyString")]
     pub(crate) sub_category: Option<String>,
-    #[serde_as(as = "NoneAsEmptyString")]
-    pub(crate) gender: Option<String>,
     pub(crate) with_controls: Option<bool>,
 }
 

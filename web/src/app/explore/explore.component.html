@@ -1,31 +1,77 @@
 <section class="my-2 mx-2">
   <app-explore-nav-bar (selectedVisualization)="onVisualizationChanged($event)"
-    (selectedCategory)="onCategoryChanged($event)" (search)="submit($event)"></app-explore-nav-bar>
+    (selectedCategory)="onCategoryChanged($event)" (selectedSubCategory)="onSubCategoryChanged($event)"
+    (search)="submit($event)"></app-explore-nav-bar>
 </section>
-<section class="my-2">
-  <!-- TODO Add some descriptive text here?-->
-  <!-- NOTE: This may be a good place to use the markdown component & load from external files based on the selection. -->
+<section class="my-3">
+  <ng-container *ngIf="selectedVisualization$ | async as visualization">
+    <ng-container *ngIf="selectedCategory$ | async as category">
+      <div class="content">
+        <h1 class="title">Explore</h1>
+        <h3 class="subtitle">{{category | asWords }}</h3>
+        <ng-container *ngIf="visualization === 'Graph'">
+          <ng-container *ngIf="category ==='Demographics'">
+            <ng-container *ngIf="selectedSubCategory$ | async as subcategory">
+              <p *ngIf="subcategory === 'ADHDSubtypesByAgeGroup'">
+                ADHD is a lifelong condition and can be found in both adults and children. There are three subtypes of
+                ADHD:
+                Primarily Inattentive, Primarily Hyperactive, and Combined Type. This heat map visualization shows the
+                distribution of the ADHD of Primarily Inattentive and Primarily Hyperactive variants distributed across
+                the
+                four age groups established in the data product.
+              </p>
+              <p *ngIf="subcategory === 'ADHDSubtypesByGender'">
+                ADHD does not discriminate by sex. The bar chart below shows the distribution of ADHD subtypes between
+                the
+                two recorded genders in this data set.
+              </p>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="category ==='MentalHealth'">
+            <p>
+              Comorbid mental health conditions are extremely common in individuals with ADHD compared to the general
+              population. The histogram visualization below shows the distribution of mental health conditions as
+              observed
+              in population.
+            </p>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="visualization === 'Table'">
+          <p>The table below shows the raw dataset used to generate the visualizations.</p>
+        </ng-container>
+      </div>
+    </ng-container>
+  </ng-container>
 </section>
 <section class="mt-4">
-  <ng-container *ngIf="selectedVisualization$ | async as visualization">
-    <div class="container">
-      @if(visualization === 'Graph') {
-      <ng-container *ngIf="plotlyData$ | async as graph; else loading">
-        <div *ngIf="plotCreated; else loading" class="box">
-          <plotly-plot [layout]="graph.layout" [data]="graph.traces"></plotly-plot>
-        </div>
-      </ng-container>
-      } @else {
-      <ng-container *ngIf="agGridData$ | async as gridData; else loading">
-        <div *ngIf="tableCreated; else loading" class="box">
-          <app-grid [data]="gridData"></app-grid>
-        </div>
-      </ng-container>
-      }
-    </div>
+  <ng-container *ngIf="!(loading$ | async); else loading">
+
+    <ng-container *ngIf="selectedVisualization$ | async as visualization">
+      <div class="container">
+        @if(visualization === 'Graph') {
+        <ng-container *ngIf="plotlyData$ | async as graph; else loading">
+          <div *ngIf="plotCreated; else loading" class="box">
+            <plotly-plot [layout]="graph.layout" [data]="graph.traces"></plotly-plot>
+          </div>
+        </ng-container>
+        } @else {
+        <ng-container *ngIf="agGridData$ | async as gridData; else loading">
+          <div *ngIf="tableCreated; else loading" class="box">
+            <app-grid [data]="gridData"></app-grid>
+          </div>
+        </ng-container>
+        }
+      </div>
+    </ng-container>
+
   </ng-container>
+
 </section>
 
 <ng-template #loading>
-  <progress class="progress is-small is-primary" max="100">15%</progress>
+  <div class="container is-max-widescreen content my-5">
+    <div class="is-align-content-center">
+      <progress class="progress is-large is-primary" max="100">15%</progress>
+    </div>
+  </div>
 </ng-template>

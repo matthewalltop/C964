@@ -9,13 +9,12 @@ mod plots;
 mod predict;
 mod traits;
 
-pub(crate) type JsonResponse = Result<String, Box<dyn  Error>>;
 
+pub(crate) type JsonResponse = Result<String, Box<dyn  Error>>;
 
 use std::error::Error;
 use axum::{routing::{get}, Router};
 use axum::http::{Method};
-use axum::routing::post;
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowOrigin, CorsLayer};
 use crate::api::{demographic_handler, predict_handler, mental_health_handler};
@@ -37,7 +36,7 @@ async fn main() {
         .route("/", get(root))
         .route("/demographics", get(demographic_handler))
         .route("/mental-health", get(mental_health_handler))
-        .route("/predict", post(predict_handler))
+        .route("/predict", get(predict_handler))
         .layer(ServiceBuilder::new()
             .layer(cors_layer));
 

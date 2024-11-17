@@ -6,6 +6,7 @@
 @use 'bulma/sass/elements/box';
 @use 'bulma/sass/components/dropdown';
 @use 'bulma/sass/grid/columns';
+@use '@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css';
 
 @use '../node_modules/ag-grid-community/styles/' as ag;
 

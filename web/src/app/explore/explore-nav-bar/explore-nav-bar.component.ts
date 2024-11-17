@@ -24,6 +24,7 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 export class ExploreNavBarComponent {
   @Output() selectedVisualization = new EventEmitter<string>();
   @Output() selectedCategory = new EventEmitter<string>();
+  @Output() selectedSubCategory = new EventEmitter<string>();
   @Output() search = new EventEmitter<DemographicsRequest | MentalHealthRequest>();
 
   public categoryMapping = ExploreDataCategoryMapping;
@@ -48,6 +49,13 @@ export class ExploreNavBarComponent {
     return this.visualization$.value;
   }
 
+  ngOnDestroy() {
+    this.visualization$.complete();
+    this.category$.complete();
+    this.demographicSubCategory$.complete();
+    this.mentalHealthSubCategory$.complete();
+  }
+
   changeVisualization(event: any) {
     const visualSelection: string = event.target.value;
     this.visualization$.next(visualSelection);
@@ -68,6 +76,7 @@ export class ExploreNavBarComponent {
     } else {
       this.mentalHealthSubCategory$.next(subCategorySelection);
     }
+    this.selectedSubCategory.emit(subCategorySelection);
   }
 
   toggleControls() {
@@ -83,6 +92,6 @@ export class ExploreNavBarComponent {
         const request = new MentalHealthRequest(visualization, mentalHealthSubCategory, null, this.includeControlsValue);
         this.search.emit(request);
       }
-    });
+    }).unsubscribe();
   }
 }

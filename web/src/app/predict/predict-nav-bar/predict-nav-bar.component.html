@@ -2,7 +2,7 @@
 
   <!-- Comorbidity Category Selection -->
   <div class="column is-2">
-    <label for="predict-comorbidity-select" class="label has-text-white">Comorbidity</label>
+    <label for="predict-comorbidity-select" class="label has-text-white"> Comorbidity </label>
     <div class="select is-normal is-info">
       <select name="comorbidity-select" id="comorbidity-select" (change)="changeComorbidity($event)">
         <ng-container *ngFor="let opt of comorbidityCategories">
@@ -12,21 +12,10 @@
     </div>
   </div>
 
-  <!-- Gender Category Selection -->
-  <div class="column is-2">
-    <label for="predict-gender-select" class="label has-text-white">Gender</label>
-    <div class="select is-normal is-info">
-      <select name="gender-select" id="gender-select" (change)="changeGender($event)">
-        <ng-container *ngFor="let opt of genderCategories">
-          <option [value]="opt">{{genderCategoryMapping[opt]}}</option>
-        </ng-container>
-      </select>
-    </div>
-  </div>
 
   <!-- ADHD Subtype Category Selection -->
   <div class="column is-2">
-    <label for="predict-adhd-select" class="label has-text-white">ADHD Type</label>
+    <label for="predict-adhd-select" class="label has-text-white"> ADHD Type </label>
     <div class="select is-normal is-info">
       <select name="adhd-select" id="adhd-select" (change)="changeAdhdType($event)">
         <ng-container *ngFor="let opt of adhdTypeCategories">
@@ -36,9 +25,22 @@
     </div>
   </div>
 
+
+  <!-- Gender Category Selection -->
+  <div class="column is-2">
+    <label for="predict-gender-select" class="label has-text-white"> Gender </label>
+    <div class="select is-normal is-info">
+      <select name="gender-select" id="gender-select" (change)="changeGender($event)">
+        <ng-container *ngFor="let opt of genderCategories">
+          <option [value]="opt">{{genderCategoryMapping[opt]}}</option>
+        </ng-container>
+      </select>
+    </div>
+  </div>
+
   <!-- Algorithm Selection -->
   <div class="column is-2">
-    <label for="predict-algorithm-select" class="label has-text-white">Algorithm</label>
+    <label for="predict-algorithm-select" class="label has-text-white"> Algorithm </label>
     <div class="select is-normal is-info">
       <select name="algorithm-select" id="algorithm-select" (change)="changeAlgorithm($event)">
         <ng-container *ngFor="let opt of algorithmCategories">
@@ -50,13 +52,11 @@
 
   <!-- Split Ratio Selection -->
   <div class="column is-2">
-    <label for="predict-split-ratio-select" class="label has-text-white">Train/Test Ratio</label>
+    <label for="predict-split-ratio-select" class="label has-text-white"> Train/Test Ratio </label>
     <div class="select is-normal is-info">
       <select name="split-ratio-select" id="split-ratio-select" (change)="changeSplitRatio($event)">
-        <ng-container *ngIf="split_ratio$ | async as sr">
-          <ng-container *ngFor="let opt of split_ratio">
-            <option [value]="opt">{{sr}}</option>
-          </ng-container>
+        <ng-container *ngFor="let opt of split_ratio">
+          <option [value]="opt">{{opt}}</option>
         </ng-container>
       </select>
     </div>
@@ -65,7 +65,7 @@
   <!-- Submit Button -->
   <div class="column is-2 is-align-content-right">
     <div class="is-align-content-center pt-5">
-      <button class="button is-success" (click)="submit($event)">Fetch Data</button>
+      <button class="button is-success" (click)="submit($event)">Predict</button>
     </div>
   </div>
 
