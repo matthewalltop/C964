@@ -150,6 +150,8 @@ pub fn apply_gaussian_naive_bayes(df: DataFrame, feature_names: Vec<&'static str
     Ok(MLAlgorithmResponse::new(cf_matrix, None, None))
 }
 
+type DecisionTreeConfusionMatrix<'a> = (DecisionTree<f64, &'a str>, ConfusionMatrix<&'static str>);
+
 pub fn apply_decision_tree(df: DataFrame, feature_names: Vec<&'static str>, split_ratio: f32) -> MLResponse {
 
     let (train, test) = create_datasets(df, feature_names, split_ratio)?;
@@ -160,7 +162,7 @@ pub fn apply_decision_tree(df: DataFrame, feature_names: Vec<&'static str>, spli
                             test: &MLDataset,
                             max_depth: usize,
                             min_weight_split: f32,
-                            min_weight_leaf: f32| -> (DecisionTree<f64, &str>, ConfusionMatrix<&'static str>) {
+                            min_weight_leaf: f32| ->  DecisionTreeConfusionMatrix {
 
         // Initialize the decision tree & fit the data.
         let model = DecisionTree::params()
@@ -168,7 +170,7 @@ pub fn apply_decision_tree(df: DataFrame, feature_names: Vec<&'static str>, spli
             .max_depth(Some(max_depth))
             .min_weight_split(min_weight_split)
             .min_weight_leaf(min_weight_leaf)
-            .fit(&train)
+            .fit(train)
             .expect("Can train the model");
 
         // Predict
@@ -219,7 +221,9 @@ pub fn apply_decision_tree(df: DataFrame, feature_names: Vec<&'static str>, spli
     Ok(response)
 }
 
-fn create_datasets(data_frame: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> Result<(Dataset<f64, &str, Ix1>, Dataset<f64, &str, Ix1>), Box<dyn Error>> {
+type PredictionDatasets<'a> = Result<(Dataset<f64, &'a str, Ix1>, Dataset<f64, &'a str, Ix1>), Box<dyn Error>>;
+
+fn create_datasets(data_frame: DataFrame, feature_names: Vec<&str>, split_ratio: f32) -> PredictionDatasets {
     let feature_len = data_frame.columns(feature_names.to_owned()) ?.len();
     // Convert the data frame to a 2D array to prepare it for logistic regression.
     let feature_array = data_frame.to_ndarray::< Float64Type > (IndexOrder::C) ?;
@@ -294,7 +298,7 @@ mod test {
             .collect()
             .unwrap();
 
-        let response = apply_gaussian_naive_bayes(df, vec!["ADHD", "ADD"], 0.70);
+        let response = apply_gaussian_naive_bayes(df, vec!["SEX", "AGE", "ADHD", "ADD"], 0.70);
         assert!(Result::is_ok(&response));
 
         let result = response.unwrap();
@@ -328,7 +332,7 @@ mod test {
             .collect()
             .unwrap();
 
-        let response = apply_decision_tree(df, vec!["SEX", "AGE", "ADHD"], 0.70);
+        let response = apply_decision_tree(df, vec!["SEX", "AGE", "ADHD", "ADD"], 0.70);
         assert!(Result::is_ok(&response));
 
         let result = response.unwrap();

@@ -44,14 +44,14 @@ pub async fn predict_handler(params: Query<PredictParams>) -> String {
     let gender = Gender::from_str(&query.gender.unwrap_or("".into())).unwrap();
     let adhd_type = AdhdSubtype::from_str(&query.adhd_type.unwrap_or("".into())).unwrap();
     let algorithm = MLAlgorithms::from_str(&query.algorithm.unwrap_or("LogisticRegression".into())).unwrap();
-    let split_ratio = &query.split_ratio.unwrap_or_else(|| { 0.70 });
+    let split_ratio = &query.split_ratio.unwrap_or(0.70 );
     
     let ml_result = match condition  {
         MentalHealthCondition::All => comorbidity_of_mental_health_condition(algorithm, *split_ratio),
         _ => comorbidity_of_given_mental_health_condition(condition, gender, adhd_type, algorithm, *split_ratio),
     }.unwrap();
     
-   let result = serde_json::to_string(&ml_result).unwrap();
+   
     
-    result
+    serde_json::to_string(&ml_result).unwrap()
 }
