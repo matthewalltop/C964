@@ -4,8 +4,6 @@
 
 This project will be the last submitted at WGU to earn my Bachelor of Science in Computer Science. I have chosen to use this opportunity to explore the data science & machine learning ecosystem that is currently present in the Rust community.
 
-Note that I'm still working on this - as long as this comment is present, there will be continuing updates to this repository.
-
 For the evaluator:
 
 ### Project Folder Structure
