@@ -2,9 +2,6 @@
 on:
   push:
     branches: [main]
-defaults:
-  run:
-    working-directory: ./web
 
 jobs:
   build:
@@ -23,6 +20,7 @@ jobs:
           cache: 'npm'
         
       - name: npm install, build, test
+        working-directory: ./web
         run: |
           npm ci
           npm run build
