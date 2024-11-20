@@ -6,8 +6,8 @@ import { PredictRequest } from '@models/requests';
 import { PlotlyModule } from 'angular-plotly.js';
 import { BehaviorSubject, finalize, tap } from 'rxjs';
 import { ConfusionMatrix, MLResponse } from '@models/responses';
-import { indicate } from 'ngx-operators';
 import { AsWordsPipe } from '@shared/as-words.pipe';
+import { indicate } from '@shared/nils-operators/indicate';
 
 @Component({
   selector: 'app-predict',

@@ -3,7 +3,7 @@ use axum::extract::Query;
 use crate::enums::{AdhdSubtype, Gender, MLAlgorithms, MentalHealthCondition};
 use crate::frames::{adhd_subtype_info, patients_with_comorbid_mental_health_conditions};
 use crate::requests::{DemographicCategory, DemographicParams, DisplayType, MentalHealthParams, PredictParams};
-use crate::plots::{bar_plot_adhd_type_by_age_range, heat_map_adhd_type_by_age_group, plot_adhd_type_by_gender, plot_comorbid_mental_health_conditions};
+use crate::plots::{ heat_map_adhd_type_by_age_group, plot_adhd_type_by_gender, plot_comorbid_mental_health_conditions};
 use crate::predict::{comorbidity_of_given_mental_health_condition, comorbidity_of_mental_health_condition};
 
 pub async fn demographic_handler(params: Query<DemographicParams>) -> String {
@@ -16,7 +16,7 @@ pub async fn demographic_handler(params: Query<DemographicParams>) -> String {
         DisplayType::Plot => match category {
             DemographicCategory::ADHDSubtypesByGender => plot_adhd_type_by_gender(with_controls),
             DemographicCategory::ADHDSubtypesByAgeGroup =>  heat_map_adhd_type_by_age_group(with_controls),
-            _ => bar_plot_adhd_type_by_age_range(with_controls)
+            _ => plot_adhd_type_by_gender(with_controls)
         },
         DisplayType::Table => adhd_subtype_info(with_controls)
     }; 

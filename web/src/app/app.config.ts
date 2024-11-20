@@ -1,6 +1,5 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { provideMarkdown } from 'ngx-markdown';
 
 import { routes } from './app.routes';
 import { HttpEvent, HttpHandlerFn, HttpRequest, provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -18,7 +17,6 @@ export function corsInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptors([corsInterceptor])),
-    provideMarkdown()
+    provideHttpClient(withInterceptors([corsInterceptor]))
   ]
 };

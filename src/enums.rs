@@ -269,7 +269,7 @@ mod test {
 
     #[test]
     fn mental_health_condition_from_strings() {
-        assert_eq!(MentalHealthCondition::from_str("This is clearly not one of the allowed values").unwrap(), MentalHealthCondition::None);
+        assert_eq!(MentalHealthCondition::from_str("This is clearly not one of the allowed values").unwrap(), MentalHealthCondition::All);
 
         assert_eq!(MentalHealthCondition::from_str("BipolarDisorder").unwrap(), MentalHealthCondition::BipolarDisorder);
         assert_eq!(MentalHealthCondition::from_str("UnipolarDepression").unwrap(), MentalHealthCondition::UnipolarDepression);

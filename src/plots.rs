@@ -48,59 +48,6 @@ pub fn heat_map_adhd_type_by_age_group(with_controls: bool) -> JsonResponse {
 }
 
 /// Produces a plot visualizing the distribution of ADHD Types by Gender
-pub fn bar_plot_adhd_type_by_age_range(with_controls: bool) -> JsonResponse {
-    let df = {
-        let control_filter = if  with_controls { lit(true) } else { col("ADHD Type").neq(lit("N/A"))  };
-
-        get_all_patient_info_raw(with_controls)
-            .with_adhd_type_translation()
-            .with_gender_translation()
-            .with_age_range_translation()
-            .filter(control_filter)
-            .group_by([col("Age Range"), col("ADHD Type")])
-            .agg([
-                col("ADHD Type").count().cast(DataType::Float64).alias("ADHD Subtypes")
-            ])
-            .select([
-                col("Age Range"),
-                col("ADHD Type"),
-                col("ADHD Subtypes")
-            ])
-            .collect()
-    }?;
-
-    println!("{}", &df);
-
-    let plots = BarPlot::builder()
-        .data(&df)
-        .group("Gender")
-        .labels("ADHD Type") // x-axis label
-        .values("ADHD Subtypes")// y-axis label
-        .plot_title(
-            Text::from("ADHD Type by Gender")
-        )
-        .legend_title(
-            Text::from("ADHD Type")
-        )
-        .x_axis(&Axis::new()
-            .show_line(true)
-            .show_axis(true)
-            .show_grid(true)
-            .tick_labels(vec![Age::SeventeenToTwentyNine.to_string(), Age::ThirtyToThirtyNine.to_string(), Age::FortyToFortyNine.to_string(), Age::FiftyToSixtySeven.to_string()]))
-        .y_axis(&Axis::new()
-            .show_line(true)
-            .show_axis(true)
-            .show_grid(true)
-            .value_range(vec![1.0, 25.0])
-            .value_thousands(false))
-        .build()
-        .to_json()?;
-
-    Ok(plots)
-}
-
-
-/// Produces a plot visualizing the distribution of ADHD Types by Gender
 pub fn plot_adhd_type_by_gender(with_controls: bool) -> JsonResponse {
     let with_control_filter = if with_controls { lit(true) } else { col("ADHD Type").neq(lit("N/A"))  } ;
 
@@ -214,7 +161,7 @@ mod test {
 
     #[test]
     fn plots_adhd_type_by_age_group() {
-        let result = bar_plot_adhd_type_by_age_range(false);
+        let result = heat_map_adhd_type_by_age_group(false);
         assert!(result.is_ok());
     }
 

@@ -8,8 +8,8 @@ import { PlotlyResponse, TableData } from '@models/responses';
 import { ExploreNavBarComponent } from './explore-nav-bar/explore-nav-bar.component';
 import { DemographicCategory, DemographicsRequest, MentalHealthCategory, MentalHealthRequest } from '@models/requests';
 import { GridComponent } from '@shared/grid/grid.component';
-import { indicate } from 'ngx-operators';
 import { AsWordsPipe } from '@shared/as-words.pipe';
+import { indicate } from '@shared/nils-operators/indicate';
 
 @Component({
   selector: 'app-explore',
@@ -119,7 +119,7 @@ export class ExploreComponent {
         indicate(this.loading$),
         finalize(() => this.loading$.next(false))
       ).subscribe((res) => {
-      this.plotlyData$.next(res);
+      this.plotlyData$.next(res as PlotlyResponse);
     });
     this.togglePlot();
   }
@@ -130,7 +130,7 @@ export class ExploreComponent {
         indicate(this.loading$),
         finalize(() => this.loading$.next(false))
       ).subscribe((res) => {
-      this.agGridData$.next(res);
+      this.agGridData$.next(res as TableData);
     });
     this.toggleTable();
     this.changeDetector.detectChanges();
@@ -142,7 +142,7 @@ export class ExploreComponent {
         indicate(this.loading$),
         finalize(() => this.loading$.next(false))
       ).subscribe((res) => {
-      this.plotlyData$.next(res);
+      this.plotlyData$.next(res as PlotlyResponse);
     });
     this.togglePlot();
     this.changeDetector.detectChanges();

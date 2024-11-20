@@ -18,7 +18,7 @@ WORKDIR /app
 # Install host build dependencies.
 RUN apk add --no-cache clang lld musl-dev git
 
-COPY /data/ /bin/data
+COPY /data/ /data
 
 # Build the application.
 # Leverage a cache mount to /usr/local/cargo/registry/
@@ -65,7 +65,7 @@ USER appuser
 
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/server /bin/
-COPY --from=build /bin/data /bin/data/
+COPY --from=build /data/ /data/
 
 # Expose the port that the application listens on.
 EXPOSE 3000
