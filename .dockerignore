@@ -9,6 +9,7 @@
 **/.dockerignore
 **/.env
 **/.git
+**/.github
 **/.gitignore
 **/.project
 **/.settings
@@ -33,5 +34,7 @@
 **/dist
 /bin
 /target
+/docs
+/web
 LICENSE
 README.md
