@@ -27,7 +27,6 @@ async fn main() {
         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
         .allow_origin(AllowOrigin::any());
     
-    // TODO: Revisit this & restrict its use via config.
     // https://github.com/tokio-rs/axum/blob/main/examples/cors/src/main.rs
     // .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
     
@@ -46,6 +45,5 @@ async fn main() {
 }
 
 async fn root () -> &'static str {
-    // TODO: Redirect to frontend URI.
     "Hello World!"
 }

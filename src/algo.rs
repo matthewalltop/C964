@@ -332,7 +332,7 @@ mod test {
             .collect()
             .unwrap();
 
-        let response = apply_decision_tree(df, vec!["SEX", "AGE", "ADHD", "ADD"], 0.70);
+        let response = apply_decision_tree(df, vec!["SEX", "AGE", "ADHD"], 0.70);
         assert!(Result::is_ok(&response));
 
         let result = response.unwrap();
